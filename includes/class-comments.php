@@ -26,7 +26,7 @@ class WP_MCP_Comments {
 	}
 
 	private static function register_list() {
-		wp_register_ability( 'core/list-comments', [
+		wp_register_ability( 'wp-mcp/list-comments', [
 			'label'               => 'List Comments',
 			'description'         => 'List WordPress comments with optional filters.',
 			'category'            => 'core',
@@ -80,7 +80,7 @@ class WP_MCP_Comments {
 	}
 
 	private static function register_set_status( $action, $label, $wp_status ) {
-		wp_register_ability( "core/{$action}-comment", [
+		wp_register_ability( "wp-mcp/{$action}-comment", [
 			'label'               => $label,
 			'description'         => "{$label} by ID.",
 			'category'            => 'core',

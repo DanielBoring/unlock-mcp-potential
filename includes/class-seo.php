@@ -10,7 +10,7 @@ class WP_MCP_SEO {
 	}
 
 	private static function register_analyze_post() {
-		wp_register_ability( 'core/seo-analyze-post', [
+		wp_register_ability( 'wp-mcp/seo-analyze-post', [
 			'label'               => 'SEO: Analyze Post',
 			'description'         => 'Analyze a post or page for SEO best practices and return findings.',
 			'category'            => 'core',
@@ -169,7 +169,7 @@ class WP_MCP_SEO {
 	}
 
 	private static function register_site_overview() {
-		wp_register_ability( 'core/seo-site-overview', [
+		wp_register_ability( 'wp-mcp/seo-site-overview', [
 			'label'               => 'SEO: Site Overview',
 			'description'         => 'Get a site-level SEO overview: sitemap, robots.txt, and posts missing Yoast optimization.',
 			'category'            => 'core',

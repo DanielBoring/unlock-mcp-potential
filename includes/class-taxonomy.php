@@ -25,7 +25,7 @@ class WP_MCP_Taxonomy {
 	private static function register_list( $taxonomy, $label ) {
 		$ability = 'category' === $taxonomy ? 'categories' : 'tags';
 
-		wp_register_ability( "core/list-{$ability}", [
+		wp_register_ability( "wp-mcp/list-{$ability}", [
 			'label'               => "List {$label}",
 			'description'         => "List all WordPress {$label}.",
 			'category'            => 'core',
@@ -87,7 +87,7 @@ class WP_MCP_Taxonomy {
 			$props['parent'] = [ 'type' => 'integer', 'description' => 'Parent category ID (0 for top-level)' ];
 		}
 
-		wp_register_ability( "core/create-{$ability}", [
+		wp_register_ability( "wp-mcp/create-{$ability}", [
 			'label'               => "Create {$label}",
 			'description'         => "Create a new WordPress {$label}.",
 			'category'            => 'core',

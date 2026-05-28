@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP MCP Abilities
  * Description: Registers core WordPress management abilities for the MCP Adapter plugin.
- * Version:     1.0.3
+ * Version:     1.0.4
  * Requires at least: 6.9
  * Requires PHP: 7.4
  * Author:      Daniel Boring

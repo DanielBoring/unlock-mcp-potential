@@ -68,7 +68,7 @@ class WP_MCP_Posts {
 			$list_input['properties']['category_id'] = [ 'type' => 'integer' ];
 		}
 
-		wp_register_ability( "core/list-{$slug}", [
+		wp_register_ability( "wp-mcp/list-{$slug}", [
 			'label'               => "List {$label}s",
 			'description'         => "List WordPress {$slug} with optional filters.",
 			'category'            => 'core',
@@ -112,7 +112,7 @@ class WP_MCP_Posts {
 		] );
 
 		// --- get ---
-		wp_register_ability( "core/get-{$type}", [
+		wp_register_ability( "wp-mcp/get-{$type}", [
 			'label'               => "Get {$label}",
 			'description'         => "Get a single WordPress {$type} by ID.",
 			'category'            => 'core',
@@ -154,7 +154,7 @@ class WP_MCP_Posts {
 			$create_props['tag_ids']      = [ 'type' => 'array', 'items' => [ 'type' => 'integer' ] ];
 		}
 
-		wp_register_ability( "core/create-{$type}", [
+		wp_register_ability( "wp-mcp/create-{$type}", [
 			'label'               => "Create {$label}",
 			'description'         => "Create a new WordPress {$type}.",
 			'category'            => 'core',
@@ -219,7 +219,7 @@ class WP_MCP_Posts {
 			$update_props['tag_ids']      = [ 'type' => 'array', 'items' => [ 'type' => 'integer' ] ];
 		}
 
-		wp_register_ability( "core/update-{$type}", [
+		wp_register_ability( "wp-mcp/update-{$type}", [
 			'label'               => "Update {$label}",
 			'description'         => "Update an existing WordPress {$type}.",
 			'category'            => 'core',
@@ -279,7 +279,7 @@ class WP_MCP_Posts {
 		] );
 
 		// --- delete (trash) ---
-		wp_register_ability( "core/delete-{$type}", [
+		wp_register_ability( "wp-mcp/delete-{$type}", [
 			'label'               => "Delete {$label}",
 			'description'         => "Move a WordPress {$type} to trash.",
 			'category'            => 'core',

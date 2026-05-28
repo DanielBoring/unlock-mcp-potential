@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || exit;
 class WP_MCP_Security {
 
 	public static function register() {
-		wp_register_ability( 'core/security-audit', [
+		wp_register_ability( 'wp-mcp/security-audit', [
 			'label'               => 'Security Audit',
 			'description'         => 'Run a security audit of the WordPress installation and return findings grouped by severity.',
 			'category'            => 'core',

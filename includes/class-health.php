@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || exit;
 class WP_MCP_Health {
 
 	public static function register() {
-		wp_register_ability( 'core/site-health-check', [
+		wp_register_ability( 'wp-mcp/site-health-check', [
 			'label'               => 'Site Health Check',
 			'description'         => 'Run WordPress site health tests and return results grouped by severity.',
 			'category'            => 'core',
