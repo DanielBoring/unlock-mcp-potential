@@ -9,6 +9,8 @@ class WP_MCP_Taxonomy {
 		self::register_list( 'post_tag', 'Tags' );
 		self::register_create( 'category' );
 		self::register_create( 'post_tag' );
+		self::register_delete( 'category' );
+		self::register_delete( 'post_tag' );
 	}
 
 	private static function normalize_term( $term ) {
@@ -127,6 +129,51 @@ class WP_MCP_Taxonomy {
 			},
 			'meta' => [
 				'annotations' => [ 'readonly' => false, 'destructive' => false, 'idempotent' => false ],
+				'mcp'         => [ 'public' => true, 'type' => 'tool' ],
+			],
+		] );
+	}
+
+	private static function register_delete( $taxonomy ) {
+		$is_category = 'category' === $taxonomy;
+		$label       = $is_category ? 'Category' : 'Tag';
+		$ability     = $is_category ? 'category' : 'tag';
+
+		wp_register_ability( "wp-mcp/delete-{$ability}", [
+			'label'               => "Delete {$label}",
+			'description'         => "Permanently delete a WordPress {$label} by ID.",
+			'category'            => 'wp-mcp',
+			'input_schema'        => [
+				'type'       => 'object',
+				'properties' => [
+					"{$ability}_id" => [ 'type' => 'integer', 'description' => "{$label} term ID to delete" ],
+				],
+				'required'   => [ "{$ability}_id" ],
+			],
+			'execute_callback'    => function ( $input ) use ( $taxonomy, $label, $ability ) {
+				$id   = absint( $input["{$ability}_id"] );
+				$term = get_term( $id, $taxonomy );
+
+				if ( ! $term || is_wp_error( $term ) ) {
+					return [ 'success' => false, 'error' => "{$label} not found." ];
+				}
+
+				$result = wp_delete_term( $id, $taxonomy );
+
+				if ( is_wp_error( $result ) ) {
+					return [ 'success' => false, 'error' => $result->get_error_message() ];
+				}
+
+				return [ 'success' => true, 'data' => [ 'id' => $id, 'deleted' => true ] ];
+			},
+			'permission_callback' => function () {
+				if ( ! current_user_can( 'manage_categories' ) ) {
+					return new WP_Error( 'forbidden', 'Requires manage_categories capability.' );
+				}
+				return true;
+			},
+			'meta' => [
+				'annotations' => [ 'readonly' => false, 'destructive' => true, 'idempotent' => false ],
 				'mcp'         => [ 'public' => true, 'type' => 'tool' ],
 			],
 		] );
