@@ -18,9 +18,10 @@ add_action( 'admin_notices', function () {
 } );
 
 function wp_mcp_abilities_register() {
-	if ( ! function_exists( 'wp_register_ability' ) ) {
+	if ( ! function_exists( 'wp_register_ability' ) || did_action( 'wp_mcp_abilities_registered' ) ) {
 		return;
 	}
+	do_action( 'wp_mcp_abilities_registered' );
 
 	require_once __DIR__ . '/includes/class-posts.php';
 	require_once __DIR__ . '/includes/class-taxonomy.php';
