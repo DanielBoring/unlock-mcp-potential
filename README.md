@@ -6,7 +6,7 @@ A WordPress plugin that registers core content management abilities for the [MCP
 
 The MCP Adapter plugin (by WordPress.org) provides the *framework* for exposing WordPress functionality over MCP â€” but it ships with zero content management abilities out of the box. Only plugins that explicitly register abilities show up as MCP tools.
 
-This plugin fills that gap. It registers 22 abilities covering the operations an editor needs day-to-day: reading and writing posts and pages, managing taxonomy, moderating comments, running health checks, auditing security, and analyzing SEO.
+This plugin fills that gap. It registers 24 abilities covering the operations an editor needs day-to-day: reading and writing posts and pages, managing taxonomy, moderating comments, running health checks, auditing security, and analyzing SEO.
 
 ## Why you'd use it
 
@@ -72,6 +72,8 @@ The MCP Adapter handles the transport layer. This plugin handles the *content* â
 | `core/list-tags` | List all tags | `read` |
 | `core/create-category` | Create a new category | `manage_categories` |
 | `core/create-tag` | Create a new tag | `manage_categories` |
+| `core/delete-category` | Permanently delete a category by ID | `manage_categories` |
+| `core/delete-tag` | Permanently delete a tag by ID | `manage_categories` |
 
 ### Comments
 | Ability | Description | Required Capability |
@@ -173,7 +175,7 @@ After activation, call the discover ability from your MCP client:
 mcp-adapter-discover-abilities
 ```
 
-You should see 25 abilities: 3 from MCP Adapter itself + 22 from this plugin.
+You should see 27 abilities: 3 from MCP Adapter itself + 24 from this plugin.
 
 Test a few to confirm they're working:
 

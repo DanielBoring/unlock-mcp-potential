@@ -144,9 +144,10 @@ class WP_MCP_Posts {
 		$create_props = [
 			'title'   => [ 'type' => 'string', 'description' => "{$label} title" ],
 			'content' => [ 'type' => 'string', 'description' => "{$label} content (HTML)" ],
-			'status'  => [ 'type' => 'string', 'enum' => [ 'draft', 'publish', 'pending' ], 'default' => 'draft' ],
-			'excerpt' => [ 'type' => 'string' ],
-			'slug'    => [ 'type' => 'string' ],
+			'status'         => [ 'type' => 'string', 'enum' => [ 'draft', 'publish', 'pending', 'future' ], 'default' => 'draft' ],
+			'scheduled_date' => [ 'type' => 'string', 'description' => 'ISO 8601 datetime to publish (required when status is future, e.g. 2025-12-01T09:00:00)' ],
+			'excerpt'        => [ 'type' => 'string' ],
+			'slug'           => [ 'type' => 'string' ],
 		];
 
 		if ( 'post' === $type ) {
@@ -168,11 +169,15 @@ class WP_MCP_Posts {
 					'post_type'    => $type,
 					'post_title'   => sanitize_text_field( $input['title'] ),
 					'post_content' => wp_kses_post( $input['content'] ),
-					'post_status'  => in_array( $input['status'] ?? 'draft', [ 'draft', 'publish', 'pending' ], true )
+					'post_status'  => in_array( $input['status'] ?? 'draft', [ 'draft', 'publish', 'pending', 'future' ], true )
 									  ? $input['status']
 									  : 'draft',
 				];
 
+				if ( ! empty( $input['scheduled_date'] ) ) {
+					$args['post_date']     = date( 'Y-m-d H:i:s', strtotime( sanitize_text_field( $input['scheduled_date'] ) ) );
+					$args['post_date_gmt'] = get_gmt_from_date( $args['post_date'] );
+				}
 				if ( ! empty( $input['excerpt'] ) ) {
 					$args['post_excerpt'] = sanitize_text_field( $input['excerpt'] );
 				}
@@ -209,9 +214,10 @@ class WP_MCP_Posts {
 			"{$type}_id" => [ 'type' => 'integer', 'description' => ucfirst( $type ) . ' ID to update' ],
 			'title'      => [ 'type' => 'string' ],
 			'content'    => [ 'type' => 'string' ],
-			'status'     => [ 'type' => 'string', 'enum' => [ 'draft', 'publish', 'pending', 'private' ] ],
-			'excerpt'    => [ 'type' => 'string' ],
-			'slug'       => [ 'type' => 'string' ],
+			'status'         => [ 'type' => 'string', 'enum' => [ 'draft', 'publish', 'pending', 'private', 'future' ] ],
+			'scheduled_date' => [ 'type' => 'string', 'description' => 'ISO 8601 datetime to publish (required when status is future)' ],
+			'excerpt'        => [ 'type' => 'string' ],
+			'slug'           => [ 'type' => 'string' ],
 		];
 
 		if ( 'post' === $type ) {
@@ -250,8 +256,12 @@ class WP_MCP_Posts {
 				if ( isset( $input['slug'] ) ) {
 					$args['post_name'] = sanitize_title( $input['slug'] );
 				}
-				if ( isset( $input['status'] ) && in_array( $input['status'], [ 'draft', 'publish', 'pending', 'private' ], true ) ) {
+				if ( isset( $input['status'] ) && in_array( $input['status'], [ 'draft', 'publish', 'pending', 'private', 'future' ], true ) ) {
 					$args['post_status'] = $input['status'];
+				}
+				if ( ! empty( $input['scheduled_date'] ) ) {
+					$args['post_date']     = date( 'Y-m-d H:i:s', strtotime( sanitize_text_field( $input['scheduled_date'] ) ) );
+					$args['post_date_gmt'] = get_gmt_from_date( $args['post_date'] );
 				}
 
 				$result = wp_update_post( $args, true );

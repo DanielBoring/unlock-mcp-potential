@@ -191,7 +191,7 @@ class WP_MCP_SEO {
 		$data = [];
 
 		// Sitemap
-		$sitemap_url      = home_url( '/sitemap_xml' );
+		$sitemap_url      = home_url( '/sitemap_index.xml' );
 		$sitemap_response = wp_remote_head( $sitemap_url, [ 'timeout' => 5 ] );
 		$sitemap_ok       = ! is_wp_error( $sitemap_response ) && wp_remote_retrieve_response_code( $sitemap_response ) === 200;
 		$data['sitemap']  = [ 'url' => $sitemap_url, 'accessible' => $sitemap_ok ];
