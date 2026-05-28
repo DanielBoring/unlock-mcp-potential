@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP MCP Abilities
  * Description: Registers core WordPress management abilities for the MCP Adapter plugin.
- * Version:     1.0.5-diag
+ * Version:     1.0.6
  * Requires at least: 6.9
  * Requires PHP: 7.4
  * Author:      Daniel Boring
@@ -19,15 +19,15 @@ add_action( 'admin_notices', function () {
 
 function wp_mcp_abilities_register() {
 	$hook = current_action() ?: 'unknown';
-	error_log( "WP_MCP_ABILITIES: wp_mcp_abilities_register() called on hook={$hook}" );
+	error_log( "WP_MCP_ABILITIES: called on hook={$hook}" );
 
 	if ( ! function_exists( 'wp_register_ability' ) ) {
-		error_log( 'WP_MCP_ABILITIES: wp_register_ability() does not exist — aborting' );
+		error_log( 'WP_MCP_ABILITIES: wp_register_ability() missing — aborting' );
 		return;
 	}
 
 	if ( did_action( 'wp_mcp_abilities_registered' ) ) {
-		error_log( 'WP_MCP_ABILITIES: already registered — skipping duplicate call' );
+		error_log( 'WP_MCP_ABILITIES: already registered, skipping' );
 		return;
 	}
 	do_action( 'wp_mcp_abilities_registered' );
@@ -46,17 +46,17 @@ function wp_mcp_abilities_register() {
 	WP_MCP_Security::register();
 	WP_MCP_SEO::register();
 
-	$probe = wp_get_ability( 'wp-mcp/list-posts' );
-	error_log( 'WP_MCP_ABILITIES: wp-mcp/list-posts registered=' . ( $probe ? 'YES' : 'NO' ) );
+	error_log( 'WP_MCP_ABILITIES: registration complete' );
 }
 
-// Primary: correct hook per WP 6.9 Abilities API docs.
+// Official WP 6.9 Abilities API hook.
 add_action( 'wp_abilities_api_init', 'wp_mcp_abilities_register' );
 
-// Fallback: after MCP Adapter initialises (priority 15), before requests process.
+// Fires inside McpAdapter::init() after its own abilities are registered —
+// safe because the registry is already initialised at this point.
+add_action( 'mcp_adapter_init', 'wp_mcp_abilities_register' );
+
+// REST API fallback: after McpAdapter (priority 15), before request processing.
 add_action( 'rest_api_init', 'wp_mcp_abilities_register', 20 );
 
-// Extra fallback: WP-CLI context (mcp-adapter uses init priority 20 for CLI).
-add_action( 'init', 'wp_mcp_abilities_register', 30 );
-
-error_log( 'WP_MCP_ABILITIES: plugin file loaded, hooks registered' );
+error_log( 'WP_MCP_ABILITIES: plugin loaded v1.0.6' );
