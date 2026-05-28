@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP MCP Abilities
  * Description: Registers core WordPress management abilities for the MCP Adapter plugin.
- * Version:     1.0.9-diag
+ * Version:     1.1.0-diag
  * Requires at least: 6.9
  * Requires PHP: 7.4
  * Author:      Daniel Boring
@@ -60,12 +60,30 @@ add_action( 'rest_api_init', function () {
 					'mcp_type'   => $meta['mcp']['type'] ?? 'tool',
 				);
 			}
+				// Inspect how many callbacks are registered on wp_abilities_api_init.
+			global $wp_filter;
+			$hook_callbacks = array();
+			if ( isset( $wp_filter['wp_abilities_api_init'] ) ) {
+				foreach ( $wp_filter['wp_abilities_api_init']->callbacks as $priority => $cbs ) {
+					foreach ( $cbs as $cb ) {
+						$fn = $cb['function'];
+						if ( is_array( $fn ) ) {
+							$fn = ( is_object( $fn[0] ) ? get_class( $fn[0] ) : $fn[0] ) . '::' . $fn[1];
+						} elseif ( $fn instanceof Closure ) {
+							$fn = 'Closure';
+						}
+						$hook_callbacks[] = "priority={$priority} fn={$fn}";
+					}
+				}
+			}
+
 			return array(
-				'wp_abilities_api_init_fired' => (bool) did_action( 'wp_abilities_api_init' ),
-				'wp_register_ability_exists'  => function_exists( 'wp_register_ability' ),
-				'wp_get_abilities_exists'     => function_exists( 'wp_get_abilities' ),
-				'ability_count'               => count( $ability_list ),
-				'abilities'                   => $ability_list,
+				'wp_abilities_api_init_fired'     => (bool) did_action( 'wp_abilities_api_init' ),
+				'wp_register_ability_exists'      => function_exists( 'wp_register_ability' ),
+				'wp_get_abilities_exists'         => function_exists( 'wp_get_abilities' ),
+				'wp_abilities_api_init_callbacks' => $hook_callbacks,
+				'ability_count'                   => count( $ability_list ),
+				'abilities'                       => $ability_list,
 			);
 		},
 		'permission_callback' => function () {
