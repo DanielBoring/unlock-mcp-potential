@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP MCP Abilities
  * Description: Registers core WordPress management abilities for the MCP Adapter plugin.
- * Version:     1.0.6
+ * Version:     1.0.7
  * Requires at least: 6.9
  * Requires PHP: 7.4
  * Author:      Daniel Boring
@@ -17,21 +17,12 @@ add_action( 'admin_notices', function () {
 	}
 } );
 
-function wp_mcp_abilities_register() {
-	$hook = current_action() ?: 'unknown';
-	error_log( "WP_MCP_ABILITIES: called on hook={$hook}" );
-
-	if ( ! function_exists( 'wp_register_ability' ) ) {
-		error_log( 'WP_MCP_ABILITIES: wp_register_ability() missing — aborting' );
-		return;
-	}
-
-	if ( did_action( 'wp_mcp_abilities_registered' ) ) {
-		error_log( 'WP_MCP_ABILITIES: already registered, skipping' );
-		return;
-	}
-	do_action( 'wp_mcp_abilities_registered' );
-
+/**
+ * wp_register_ability() only works when called from inside the wp_abilities_api_init
+ * action (WordPress enforces this with doing_action() check and returns null otherwise).
+ * This callback must ONLY be hooked to wp_abilities_api_init.
+ */
+add_action( 'wp_abilities_api_init', function () {
 	require_once __DIR__ . '/includes/class-posts.php';
 	require_once __DIR__ . '/includes/class-taxonomy.php';
 	require_once __DIR__ . '/includes/class-comments.php';
@@ -45,18 +36,4 @@ function wp_mcp_abilities_register() {
 	WP_MCP_Health::register();
 	WP_MCP_Security::register();
 	WP_MCP_SEO::register();
-
-	error_log( 'WP_MCP_ABILITIES: registration complete' );
-}
-
-// Official WP 6.9 Abilities API hook.
-add_action( 'wp_abilities_api_init', 'wp_mcp_abilities_register' );
-
-// Fires inside McpAdapter::init() after its own abilities are registered —
-// safe because the registry is already initialised at this point.
-add_action( 'mcp_adapter_init', 'wp_mcp_abilities_register' );
-
-// REST API fallback: after McpAdapter (priority 15), before request processing.
-add_action( 'rest_api_init', 'wp_mcp_abilities_register', 20 );
-
-error_log( 'WP_MCP_ABILITIES: plugin loaded v1.0.6' );
+} );
