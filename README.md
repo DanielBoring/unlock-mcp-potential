@@ -55,21 +55,7 @@ WP Admin → Users → Add New → set Role to **Editor** → Add New User
 WP Admin → Users → edit the user → Application Passwords → enter a name → Add → copy the password
 
 **5. Configure your MCP client**
-```json
-{
-  "mcpServers": {
-    "wordpress": {
-      "command": "npx",
-      "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
-      "env": {
-        "WP_SITE_URL": "https://your-site.com",
-        "WP_USERNAME": "ai-editor",
-        "WP_APP_PASSWORD": "xxxx xxxx xxxx xxxx xxxx xxxx"
-      }
-    }
-  }
-}
-```
+See [Step 5 — Connect your MCP client](#5-connect-your-mcp-client) for config snippets covering Claude Code, Claude Desktop, GitHub Copilot (VS Code), GitHub Copilot CLI, Codex, Windsurf, Gemini CLI, and ChatGPT.
 
 **6. Verify**
 Run `mcp-adapter-discover-abilities` — you should see additional abilities enabled by this companion plugin.
@@ -252,7 +238,12 @@ The password will be in the format `xxxx xxxx xxxx xxxx xxxx xxxx`. Keep the spa
 
 ### 5. Connect your MCP client
 
-Configure `@automattic/mcp-wordpress-remote` to point at your WordPress site. In Claude Code (`~/.claude/settings.json`):
+Configure `@automattic/mcp-wordpress-remote` to point at your WordPress site. Select your client below:
+
+<details>
+<summary>Claude Code</summary>
+
+Add to `~/.claude/settings.json`:
 
 ```json
 {
@@ -269,6 +260,152 @@ Configure `@automattic/mcp-wordpress-remote` to point at your WordPress site. In
   }
 }
 ```
+
+</details>
+
+<details>
+<summary>Claude Desktop</summary>
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (Mac) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "wordpress": {
+      "command": "npx",
+      "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
+      "env": {
+        "WP_SITE_URL": "https://your-site.com",
+        "WP_USERNAME": "ai-editor",
+        "WP_APP_PASSWORD": "xxxx xxxx xxxx xxxx xxxx xxxx"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>GitHub Copilot (VS Code)</summary>
+
+Requires VS Code 1.99+. Add to `.vscode/mcp.json` in your project (workspace-scoped) or your VS Code user profile (global).
+
+> **Note:** VS Code uses `"servers"` as the root key, not `"mcpServers"`. Copying a Claude or Cursor config without changing this key is the most common setup mistake.
+
+```json
+{
+  "servers": {
+    "wordpress": {
+      "command": "npx",
+      "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
+      "env": {
+        "WP_SITE_URL": "https://your-site.com",
+        "WP_USERNAME": "ai-editor",
+        "WP_APP_PASSWORD": "xxxx xxxx xxxx xxxx xxxx xxxx"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>GitHub Copilot CLI</summary>
+
+Add to `~/.copilot/mcp-config.json`:
+
+```json
+{
+  "mcpServers": {
+    "wordpress": {
+      "command": "npx",
+      "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
+      "env": {
+        "WP_SITE_URL": "https://your-site.com",
+        "WP_USERNAME": "ai-editor",
+        "WP_APP_PASSWORD": "xxxx xxxx xxxx xxxx xxxx xxxx"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>Codex</summary>
+
+Add to `~/.codex/config.toml` (global) or `.codex/config.toml` in your project root (project-scoped, trusted projects only):
+
+```toml
+[mcp_servers.wordpress]
+command = "npx"
+args = ["-y", "@automattic/mcp-wordpress-remote@latest"]
+
+[mcp_servers.wordpress.env]
+WP_SITE_URL = "https://your-site.com"
+WP_USERNAME = "ai-editor"
+WP_APP_PASSWORD = "xxxx xxxx xxxx xxxx xxxx xxxx"
+```
+
+</details>
+
+<details>
+<summary>Windsurf</summary>
+
+Add to `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "wordpress": {
+      "command": "npx",
+      "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
+      "env": {
+        "WP_SITE_URL": "https://your-site.com",
+        "WP_USERNAME": "ai-editor",
+        "WP_APP_PASSWORD": "xxxx xxxx xxxx xxxx xxxx xxxx"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>Gemini CLI</summary>
+
+Add to `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "wordpress": {
+      "command": "npx",
+      "args": ["-y", "@automattic/mcp-wordpress-remote@latest"],
+      "env": {
+        "WP_SITE_URL": "https://your-site.com",
+        "WP_USERNAME": "ai-editor",
+        "WP_APP_PASSWORD": "xxxx xxxx xxxx xxxx xxxx xxxx"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>ChatGPT</summary>
+
+ChatGPT's MCP integration works differently from the tools above. Rather than a local config file, it is configured through **Settings → Connected Apps** in the ChatGPT web interface, and it connects to **remote HTTP endpoints** rather than local stdio processes.
+
+`@automattic/mcp-wordpress-remote` runs as a local npm process and cannot be connected from ChatGPT directly without hosting the server at a public URL. ChatGPT MCP support is also currently limited to **Business, Enterprise, and Edu** plans. If you have a publicly hosted MCP endpoint and an eligible plan, add it via the Connected Apps UI.
+
+</details>
 
 ---
 
