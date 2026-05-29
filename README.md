@@ -1,4 +1,31 @@
-# WordPress MCP Abilities
+<div align="center">
+  <img src="assets/gh_banner.png" alt="WordPress MCP Abilities" />
+
+  <h1>WordPress MCP Abilities</h1>
+  <h2>Give your AI agent editorial control over WordPress.</h2>
+
+
+  <h2>
+    <a href="https://wordpress.org">
+      <img src="https://img.shields.io/badge/WordPress-6.9%2B-21759b?logo=wordpress&logoColor=white" alt="WordPress 6.9+" />
+    </a>
+    <a href="https://www.php.net">
+      <img src="https://img.shields.io/badge/PHP-7.4%2B-777bb4?logo=php&logoColor=white" alt="PHP 7.4+" />
+    </a>
+    <a href="https://www.gnu.org/licenses/gpl-2.0.html">
+      <img src="https://img.shields.io/badge/license-GPL--2.0%2B-blue" alt="License GPL-2.0+" />
+    </a>
+  </h2>
+
+</div>
+
+<div align="center">
+
+[Why you'd use it](#why-youd-use-it) · [Architecture](#architecture) · [Abilities](#abilities) · [Requirements](#requirements) · [Installation](#installation) · [Verification](#verification) · [Security](#security)
+
+</div>
+
+---
 
 **WordPress MCP Abilities** is a companion plugin for the official [MCP Adapter](https://github.com/WordPress/mcp-adapter) by WordPress. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities. Any tools an AI agent can actually call must come from plugins that register them. 
 
@@ -128,6 +155,8 @@ Returns findings in `fail` / `warn` / `pass` buckets with actionable description
 This plugin depends on MCP Adapter being installed and active. Install it first via **WP Admin → Plugins → Add New**, search for "MCP Adapter", and activate it.
 
 ### 2. Install WordPress MCP Abilities
+
+> **Coming soon to the WordPress Plugin Directory** — this plugin has been submitted for review. Once approved, you'll be able to install it directly from **WP Admin → Plugins → Add New** by searching "WordPress MCP Abilities". Until then, use one of the options below.
 
 **Option A — Upload zip (recommended for most sites)**
 
