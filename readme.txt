@@ -74,9 +74,13 @@ No, but behavior differs depending on whether it is active:
 
 = What WordPress user role should I use? =
 
-Use the **Editor** role. It has all the capabilities this plugin requires (`edit_posts`, `edit_pages`, `delete_posts`, `delete_pages`, `manage_categories`, `moderate_comments`, `read`). Administrator is not needed and gives the AI agent unnecessary access to site settings, user management, and plugin installation.
+For the current ability set, use the **Editor** role. It covers all capabilities the plugin currently uses: `edit_posts`, `edit_pages`, `delete_posts`, `delete_pages`, `manage_categories`, `moderate_comments`, and `read`. Administrator is not needed for any of these and gives the AI agent unnecessary access to site settings, user management, and plugin installation.
 
-Create a dedicated user for the AI agent rather than using your personal account — this makes it easy to revoke access independently.
+Note on role scope: the `edit_posts` capability is available to Authors as well, but WordPress scopes query results to the authenticated user's own content unless `edit_others_posts` is also present (which Editors have). Use an Author-role account only if you intentionally want the agent limited to content it created. For full site-wide editorial control, use Editor.
+
+Planned audit abilities — database health, performance status, backup detection, plugin audit, and user access audit — will require an **Administrator** account because they need `manage_options`, `activate_plugins`, or `edit_users`. For those workflows, create a second dedicated Administrator service account and keep the Editor account for content. Using two accounts limits blast radius: the Editor account cannot touch site configuration, and the Administrator account is used only for auditing.
+
+Always create a dedicated user for each role rather than using your personal account — this makes access easy to revoke independently.
 
 = How do I verify the plugin is working? =
 

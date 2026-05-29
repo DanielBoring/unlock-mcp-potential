@@ -109,59 +109,76 @@ The MCP Adapter handles the transport layer. This plugin handles the *content* �
 
 New abilities and feature requests are tracked in [GitHub Issues](https://github.com/DanielBoring/wordpress-mcp-abilities/issues).
 
+### Role overview
+
+Each ability enforces a WordPress capability check. The table below maps standard WordPress roles to the capabilities this plugin uses so you can choose the right role for your MCP service account.
+
+| Role          | Capabilities used by this plugin                                         | Suitable for                                                                 |
+| ------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| Subscriber    | `read`                                                                   | Read-only workflows: taxonomy browsing, health checks, SEO overview          |
+| Author        | `edit_posts`, `delete_posts`, `upload_files`                             | Creating and managing the agent's own posts only                             |
+| **Editor** ✓  | All Author caps + `edit_pages`, `manage_categories`, `moderate_comments` | **Full editorial control — recommended default**                             |
+| Administrator | All Editor caps + `manage_options`, `activate_plugins`, `edit_users`     | Required for audit, performance, database, backup, and user access abilities |
+
+> **Scope note for `edit_posts`:** This capability is available to Authors and above, but WordPress scopes query results to the authenticated user's own content unless `edit_others_posts` is also present. An Editor account (which has `edit_others_posts`) sees all content site-wide. Use Author only if the agent should be limited to content it created.
+
+---
+
 ### Posts
-| Ability              | Description                                                            | Required Capability |
-| -------------------- | ---------------------------------------------------------------------- | ------------------- |
-| `wp-mcp/list-posts`  | List posts with filters (status, search, author, category, pagination) | `edit_posts`        |
-| `wp-mcp/get-post`    | Get a single post by ID                                                | `edit_posts`        |
-| `wp-mcp/create-post` | Create a new post with title, content, status, categories, tags        | `edit_posts`        |
-| `wp-mcp/update-post` | Update an existing post                                                | `edit_posts`        |
-| `wp-mcp/delete-post` | Move a post to trash                                                   | `delete_posts`      |
+| Ability              | Description                                                            | Required Capability | Min. Role |
+| -------------------- | ---------------------------------------------------------------------- | ------------------- | --------- |
+| `wp-mcp/list-posts`  | List posts with filters (status, search, author, category, pagination) | `edit_posts`        | Author †  |
+| `wp-mcp/get-post`    | Get a single post by ID                                                | `edit_posts`        | Author †  |
+| `wp-mcp/create-post` | Create a new post with title, content, status, categories, tags        | `edit_posts`        | Author    |
+| `wp-mcp/update-post` | Update an existing post                                                | `edit_posts`        | Author †  |
+| `wp-mcp/delete-post` | Move a post to trash                                                   | `delete_posts`      | Author †  |
+
+† Returns or acts on the service account's own posts only. Use **Editor** to manage all posts site-wide.
 
 ### Pages
-| Ability              | Description             | Required Capability |
-| -------------------- | ----------------------- | ------------------- |
-| `wp-mcp/list-pages`  | List pages with filters | `edit_pages`        |
-| `wp-mcp/get-page`    | Get a single page by ID | `edit_pages`        |
-| `wp-mcp/create-page` | Create a new page       | `edit_pages`        |
-| `wp-mcp/update-page` | Update an existing page | `edit_pages`        |
-| `wp-mcp/delete-page` | Move a page to trash    | `delete_pages`      |
+| Ability              | Description             | Required Capability | Min. Role |
+| -------------------- | ----------------------- | ------------------- | --------- |
+| `wp-mcp/list-pages`  | List pages with filters | `edit_pages`        | Editor    |
+| `wp-mcp/get-page`    | Get a single page by ID | `edit_pages`        | Editor    |
+| `wp-mcp/create-page` | Create a new page       | `edit_pages`        | Editor    |
+| `wp-mcp/update-page` | Update an existing page | `edit_pages`        | Editor    |
+| `wp-mcp/delete-page` | Move a page to trash    | `delete_pages`      | Editor    |
 
 ### Taxonomy
-| Ability                  | Description                         | Required Capability |
-| ------------------------ | ----------------------------------- | ------------------- |
-| `wp-mcp/list-categories` | List all categories                 | `read`              |
-| `wp-mcp/list-tags`       | List all tags                       | `read`              |
-| `wp-mcp/create-category` | Create a new category               | `manage_categories` |
-| `wp-mcp/create-tag`      | Create a new tag                    | `manage_categories` |
-| `wp-mcp/delete-category` | Permanently delete a category by ID | `manage_categories` |
-| `wp-mcp/delete-tag`      | Permanently delete a tag by ID      | `manage_categories` |
+| Ability                  | Description                         | Required Capability | Min. Role  |
+| ------------------------ | ----------------------------------- | ------------------- | ---------- |
+| `wp-mcp/list-categories` | List all categories                 | `read`              | Subscriber |
+| `wp-mcp/list-tags`       | List all tags                       | `read`              | Subscriber |
+| `wp-mcp/create-category` | Create a new category               | `manage_categories` | Editor     |
+| `wp-mcp/create-tag`      | Create a new tag                    | `manage_categories` | Editor     |
+| `wp-mcp/delete-category` | Permanently delete a category by ID | `manage_categories` | Editor     |
+| `wp-mcp/delete-tag`      | Permanently delete a tag by ID      | `manage_categories` | Editor     |
 
 ### Comments
-| Ability                  | Description                                       | Required Capability |
-| ------------------------ | ------------------------------------------------- | ------------------- |
-| `wp-mcp/list-comments`   | List comments with filters (post, status, search) | `edit_posts`        |
-| `wp-mcp/approve-comment` | Approve a comment                                 | `moderate_comments` |
-| `wp-mcp/trash-comment`   | Move a comment to trash                           | `moderate_comments` |
-| `wp-mcp/spam-comment`    | Mark a comment as spam                            | `moderate_comments` |
+| Ability                  | Description                                       | Required Capability | Min. Role |
+| ------------------------ | ------------------------------------------------- | ------------------- | --------- |
+| `wp-mcp/list-comments`   | List comments with filters (post, status, search) | `edit_posts`        | Author    |
+| `wp-mcp/approve-comment` | Approve a comment                                 | `moderate_comments` | Editor    |
+| `wp-mcp/trash-comment`   | Move a comment to trash                           | `moderate_comments` | Editor    |
+| `wp-mcp/spam-comment`    | Mark a comment as spam                            | `moderate_comments` | Editor    |
 
 ### Site Health
-| Ability                    | Description                                                                                                | Required Capability |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------- |
-| `wp-mcp/site-health-check` | Run WordPress's built-in health tests; returns results grouped by severity (critical / recommended / good) | `read`              |
+| Ability                    | Description                                                                                                | Required Capability | Min. Role  |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------- | ---------- |
+| `wp-mcp/site-health-check` | Run WordPress's built-in health tests; returns results grouped by severity (critical / recommended / good) | `read`              | Subscriber |
 
 ### Security Audit
-| Ability                 | Description                                                                                                                               | Required Capability |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| `wp-mcp/security-audit` | Check for common security issues: debug mode, file editor, SSL, admin username, WP/plugin version currency, XMLRPC, and auth key strength | `read`              |
+| Ability                 | Description                                                                                                                               | Required Capability | Min. Role  |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ---------- |
+| `wp-mcp/security-audit` | Check for common security issues: debug mode, file editor, SSL, admin username, WP/plugin version currency, XMLRPC, and auth key strength | `read`              | Subscriber |
 
 Returns findings in `fail` / `warn` / `pass` buckets with actionable descriptions.
 
 ### SEO Analysis
-| Ability                    | Description                                                                                                                                     | Required Capability |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| `wp-mcp/seo-analyze-post`  | Analyze a single post or page: title length, word count, meta description, focus keyword placement, image alt text, internal links, slug length | `edit_posts`        |
-| `wp-mcp/seo-site-overview` | Site-wide SEO snapshot: sitemap and robots.txt accessibility, count of published posts missing Yoast focus keyword or meta description          | `read`              |
+| Ability                    | Description                                                                                                                                     | Required Capability | Min. Role  |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ---------- |
+| `wp-mcp/seo-analyze-post`  | Analyze a single post or page: title length, word count, meta description, focus keyword placement, image alt text, internal links, slug length | `edit_posts`        | Author     |
+| `wp-mcp/seo-site-overview` | Site-wide SEO snapshot: sitemap and robots.txt accessibility, count of published posts missing Yoast focus keyword or meta description          | `read`              | Subscriber |
 
 **With Yoast SEO installed:** all checks run fully, including meta description and focus keyword analysis per post, site-wide counts of unoptimized content, and Yoast sitemap verification.
 
@@ -220,7 +237,7 @@ It is recommended to create a dedicated user for your AI agent rather than using
 3. Set the **Role** to **Editor**
 4. Click **Add New User**
 
-> **Why Editor and not Administrator?** The Editor role has all the capabilities this plugin uses (`edit_posts`, `edit_pages`, `delete_posts`, `delete_pages`, `manage_categories`, `moderate_comments`, `read`). Administrator is not needed and gives the AI agent unnecessary access to site settings, user management, and plugin installation.
+> **Why Editor and not Administrator?** The Editor role covers all capabilities used by the current ability set (`edit_posts`, `edit_pages`, `delete_posts`, `delete_pages`, `manage_categories`, `moderate_comments`, `read`). For planned audit abilities — database health, performance status, backup status, plugin audit, and user access audit — an Administrator account will be required, as those abilities need `manage_options`, `activate_plugins`, or `edit_users`. If you plan to use those abilities, create a separate Administrator service account and keep the Editor account for content workflows. See the [Role overview](#role-overview) for the full breakdown.
 
 ### 4. Create an application password
 
