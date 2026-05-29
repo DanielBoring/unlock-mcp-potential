@@ -1,4 +1,4 @@
-# WP MCP Abilities — Backlog
+# WordPress MCP Abilities — Backlog
 
 Items are ordered by priority. Work through them top-to-bottom.
 

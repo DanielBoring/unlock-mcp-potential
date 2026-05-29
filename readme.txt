@@ -1,4 +1,4 @@
-=== WP MCP Abilities ===
+=== WordPress MCP Abilities ===
 Contributors: danielboring
 Tags: mcp, ai, automation, content-management, artificial-intelligence
 Requires at least: 6.9
@@ -14,7 +14,7 @@ Adds 24 content management abilities to the WordPress MCP Adapter, giving AI age
 
 The [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin exposes WordPress over the Model Context Protocol — but ships with no content management abilities out of the box. This plugin fills that gap.
 
-WP MCP Abilities registers 24 abilities across six groups, giving AI agents (such as Claude) a full working vocabulary for your WordPress site:
+WordPress MCP Abilities registers 24 abilities across six groups, giving AI agents (such as Claude) a full working vocabulary for your WordPress site:
 
 **Posts & Pages**
 Create, read, update, and delete posts and pages. Supports all statuses including scheduled (future) posts, category and tag assignment, and pagination.
@@ -40,7 +40,7 @@ All abilities enforce WordPress capability checks — an editor cannot call abil
 
 == Installation ==
 
-1. Install and activate the [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin first — WP MCP Abilities depends on it.
+1. Install and activate the [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin first — WordPress MCP Abilities depends on it.
 2. Upload the `wp-mcp-abilities` folder to `/wp-content/plugins/`, or install via **Plugins > Add New > Upload Plugin**.
 3. Activate the plugin through the **Plugins** menu in WordPress.
 4. Create a dedicated WordPress user for your AI agent: go to **Users > Add New User**, set the Role to **Editor**, and save. Using a dedicated account limits access and makes it easy to revoke later.
@@ -51,7 +51,7 @@ All abilities enforce WordPress capability checks — an editor cannot call abil
 
 = Does this work without the MCP Adapter plugin? =
 
-No. WP MCP Abilities extends the official WordPress MCP Adapter plugin. Install and activate it first from the plugin directory.
+No. WordPress MCP Abilities extends the official WordPress MCP Adapter plugin. Install and activate it first from the plugin directory.
 
 = What MCP clients are supported? =
 

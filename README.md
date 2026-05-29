@@ -1,4 +1,4 @@
-# WP MCP Abilities
+# WordPress MCP Abilities
 
 A WordPress plugin that registers core content management abilities for the [MCP Adapter](https://github.com/WordPress/mcp-adapter) plugin, making them accessible to AI agents via the Model Context Protocol (MCP).
 
@@ -37,7 +37,7 @@ WordPress Site
   ├── MCP Adapter plugin                  ← framework: registers the REST endpoint,
   │     (WordPress/mcp-adapter)               handles sessions, routes MCP calls
   │
-  └── WP MCP Abilities plugin             ← this plugin: registers the actual
+  └── WordPress MCP Abilities plugin             ← this plugin: registers the actual
         (this repo)                           abilities the AI can call
 ```
 
@@ -124,7 +124,7 @@ Returns findings in `fail` / `warn` / `pass` buckets with actionable description
 
 This plugin depends on MCP Adapter being installed and active. Install it first via WP Admin or by cloning the repo into `wp-content/plugins/`.
 
-### 2. Install WP MCP Abilities
+### 2. Install WordPress MCP Abilities
 
 **Option A — Upload zip (recommended for most sites)**
 
