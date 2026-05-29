@@ -17,11 +17,11 @@
     </a>
   </h2>
 
-[Quickstart](#quickstart) • [Architecture](#architecture) • [Abilities](#abilities) • [Requirements](#requirements) • [Installation](#installation) • [Verification](#verification) • [Security](#security)
+[Quickstart](#quickstart) • [Architecture](#architecture) • [MCP Abilities](#mcp-abilities) • [Requirements](#requirements) • [Installation](#installation) • [Verification](#verification) • [Security](#security)
 
 </div>
 
-**WordPress MCP Abilities** is a companion plugin for the official [MCP Adapter](https://github.com/WordPress/mcp-adapter) by WordPress. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities out of the box. Any tools an AI agent can actually call must come from plugins that register them. This plugin fills that gap with 24 abilities, giving your AI agent the tools to take action: publish a draft, run a security audit, check site health, or analyze a post's SEO.
+**WordPress MCP Abilities** is a companion plugin for the official [MCP Adapter](https://github.com/WordPress/mcp-adapter) by WordPress. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities out of the box. Any tools an AI agent can actually call must come from plugins that register them. This plugin fills that gap, giving your AI agent the tools to take action: publish a draft, run a security audit, check site health, or analyze a post's SEO.
 
 - You want an AI agent to draft, update, or publish posts and pages
 - You want to ask an AI to audit your site's security or health posture
@@ -34,7 +34,7 @@ Only the MCP Adapter's 3 meta/discovery abilities are visible — no content too
 ![Before](assets/before.png)
 
 ### With this plugin
-All 27 abilities available: full editorial access to posts, pages, taxonomy, comments, security, and SEO.
+All abilities available: full editorial access to posts, pages, taxonomy, comments, security, and SEO.
 
 ![After](assets/after.png)
 
@@ -100,7 +100,9 @@ The MCP Adapter handles the transport layer. This plugin handles the *content* �
 
 ---
 
-## Abilities
+## MCP Abilities
+
+New abilities and feature requests are tracked in [GitHub Issues](https://github.com/DanielBoring/wordpress-mcp-abilities/issues).
 
 ### Posts
 | Ability              | Description                                                            | Required Capability |
@@ -170,6 +172,8 @@ Returns findings in `fail` / `warn` / `pass` buckets with actionable description
 | PHP                                                            | 7.4+                                                                                                             |
 | [MCP Adapter plugin](https://github.com/WordPress/mcp-adapter) | Latest                                                                                                           |
 | [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/)      | Optional — structural SEO checks work without it; meta description, focus keyword, and sitemap checks require it |
+
+> **Self-hosted WordPress only.** Both this plugin and the MCP Adapter require a WordPress installation where custom plugins can be installed — self-hosted WordPress or a managed host (WP Engine, Kinsta, Flywheel, etc.). They are not compatible with WordPress.com Free, Personal, or Premium plans, which do not allow custom plugin installation.
 
 ---
 
@@ -254,7 +258,7 @@ After activation and MCP client configuration, run the following from your MCP c
 mcp-adapter-discover-abilities
 ```
 
-You should see 27 abilities: 3 from MCP Adapter itself + 24 from this plugin.
+You should see the MCP Adapter's built-in meta/discovery abilities plus all abilities registered by this plugin.
 
 Test a few to confirm they're working:
 
