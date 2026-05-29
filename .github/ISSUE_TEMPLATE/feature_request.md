@@ -1,0 +1,22 @@
+---
+name: Feature request
+about: Suggest a new ability or enhancement
+title: '[Feature] '
+labels: enhancement
+assignees: ''
+---
+
+**Proposed ability name**
+e.g. `wp-mcp/list-media`
+
+**What should it do?**
+A clear description of what the ability does and what it returns.
+
+**Required WordPress capability**
+Which capability gate should protect it? e.g. `edit_posts`, `manage_options`, `read`
+
+**Why does an AI agent need this?**
+Describe the workflow or use case this enables.
+
+**Additional context**
+Any related abilities, edge cases, or implementation notes.
