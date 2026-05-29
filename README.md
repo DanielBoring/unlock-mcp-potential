@@ -19,7 +19,7 @@ MCP Adapter only found MCP abilities from Yoast
 ![Only the MCP Adapter](assets/before.png)
 
 ## After:
-Unlock additional WordPress bilities!
+Unlock additional WordPress abilities with this plugin!
 
 ![With WordPress MCP Abiltiies!](assets/after.png)
 ---
