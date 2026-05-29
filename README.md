@@ -1,22 +1,33 @@
 # WordPress MCP Abilities
 
-**WordPress MCP Abilities** is a companion plugin for the official [MCP Adapter](https://github.com/WordPress/mcp-adapter) by Automattic. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities. Any tools an AI agent can actually call must come from plugins that register them. This plugin registers 24 abilities covering what an editor needs day-to-day: posts, pages, taxonomy, comments, site health, security auditing, and SEO analysis.
+**WordPress MCP Abilities** is a companion plugin for the official [MCP Adapter](https://github.com/WordPress/mcp-adapter) by WordPress. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities. Any tools an AI agent can actually call must come from plugins that register them. 
+
+This plugin (WordPress MCP Abilities) registers 24 abilities covering what an editor needs day-to-day: posts, pages, taxonomy, comments, site health, security auditing, and SEO analysis.
 
 ## Why you'd use it
 
-If you're connecting an AI assistant (like Claude) to a WordPress site via the `@automattic/mcp-wordpress-remote` MCP server, without this plugin the AI can only see the 3 meta/discovery abilities the MCP Adapter ships with — there are no editorial tools to call. This plugin gives the AI a full working vocabulary for your site.
+This plugin presents WordPress content management abilities to the MCP Adapter — giving your AI agent the tools to take action: publish a draft, run a security audit, check site health, or analyze a post's SEO. Without it, the MCP Adapter has no editorial tools to offer.
 
 - You want an AI agent to draft, update, or publish posts and pages
 - You want to ask an AI to audit your site's security or health posture
 - You want SEO analysis integrated into your content workflow
-- You're running `@automattic/mcp-wordpress-remote` and `mcp-adapter-discover-abilities` returns almost nothing
+- You open `mcp-adapter-discover-abilities` and see only the adapter's own meta abilities, with no content tools
 
+## Before:
+MCP Adapter only found MCP abilities from Yoast
+
+![Only the MCP Adapter](assets/before.png)
+
+## After:
+Unlock additional WordPress bilities!
+
+![With WordPress MCP Abiltiies!](assets/after.png)
 ---
 
 ## Architecture
 
 ```
-AI Agent (e.g. Claude Code)
+AI Agent (e.g. Claude Code, Codex, etc)
         │
         │  MCP Protocol (JSON-RPC over HTTP)
         ▼
@@ -40,58 +51,58 @@ The MCP Adapter handles the transport layer. This plugin handles the *content* �
 ## Abilities
 
 ### Posts
-| Ability | Description | Required Capability |
-|---|---|---|
-| `wp-mcp/list-posts` | List posts with filters (status, search, author, category, pagination) | `edit_posts` |
-| `wp-mcp/get-post` | Get a single post by ID | `edit_posts` |
-| `wp-mcp/create-post` | Create a new post with title, content, status, categories, tags | `edit_posts` |
-| `wp-mcp/update-post` | Update an existing post | `edit_posts` |
-| `wp-mcp/delete-post` | Move a post to trash | `delete_posts` |
+| Ability              | Description                                                            | Required Capability |
+| -------------------- | ---------------------------------------------------------------------- | ------------------- |
+| `wp-mcp/list-posts`  | List posts with filters (status, search, author, category, pagination) | `edit_posts`        |
+| `wp-mcp/get-post`    | Get a single post by ID                                                | `edit_posts`        |
+| `wp-mcp/create-post` | Create a new post with title, content, status, categories, tags        | `edit_posts`        |
+| `wp-mcp/update-post` | Update an existing post                                                | `edit_posts`        |
+| `wp-mcp/delete-post` | Move a post to trash                                                   | `delete_posts`      |
 
 ### Pages
-| Ability | Description | Required Capability |
-|---|---|---|
-| `wp-mcp/list-pages` | List pages with filters | `edit_pages` |
-| `wp-mcp/get-page` | Get a single page by ID | `edit_pages` |
-| `wp-mcp/create-page` | Create a new page | `edit_pages` |
-| `wp-mcp/update-page` | Update an existing page | `edit_pages` |
-| `wp-mcp/delete-page` | Move a page to trash | `delete_pages` |
+| Ability              | Description             | Required Capability |
+| -------------------- | ----------------------- | ------------------- |
+| `wp-mcp/list-pages`  | List pages with filters | `edit_pages`        |
+| `wp-mcp/get-page`    | Get a single page by ID | `edit_pages`        |
+| `wp-mcp/create-page` | Create a new page       | `edit_pages`        |
+| `wp-mcp/update-page` | Update an existing page | `edit_pages`        |
+| `wp-mcp/delete-page` | Move a page to trash    | `delete_pages`      |
 
 ### Taxonomy
-| Ability | Description | Required Capability |
-|---|---|---|
-| `wp-mcp/list-categories` | List all categories | `read` |
-| `wp-mcp/list-tags` | List all tags | `read` |
-| `wp-mcp/create-category` | Create a new category | `manage_categories` |
-| `wp-mcp/create-tag` | Create a new tag | `manage_categories` |
+| Ability                  | Description                         | Required Capability |
+| ------------------------ | ----------------------------------- | ------------------- |
+| `wp-mcp/list-categories` | List all categories                 | `read`              |
+| `wp-mcp/list-tags`       | List all tags                       | `read`              |
+| `wp-mcp/create-category` | Create a new category               | `manage_categories` |
+| `wp-mcp/create-tag`      | Create a new tag                    | `manage_categories` |
 | `wp-mcp/delete-category` | Permanently delete a category by ID | `manage_categories` |
-| `wp-mcp/delete-tag` | Permanently delete a tag by ID | `manage_categories` |
+| `wp-mcp/delete-tag`      | Permanently delete a tag by ID      | `manage_categories` |
 
 ### Comments
-| Ability | Description | Required Capability |
-|---|---|---|
-| `wp-mcp/list-comments` | List comments with filters (post, status, search) | `edit_posts` |
-| `wp-mcp/approve-comment` | Approve a comment | `moderate_comments` |
-| `wp-mcp/trash-comment` | Move a comment to trash | `moderate_comments` |
-| `wp-mcp/spam-comment` | Mark a comment as spam | `moderate_comments` |
+| Ability                  | Description                                       | Required Capability |
+| ------------------------ | ------------------------------------------------- | ------------------- |
+| `wp-mcp/list-comments`   | List comments with filters (post, status, search) | `edit_posts`        |
+| `wp-mcp/approve-comment` | Approve a comment                                 | `moderate_comments` |
+| `wp-mcp/trash-comment`   | Move a comment to trash                           | `moderate_comments` |
+| `wp-mcp/spam-comment`    | Mark a comment as spam                            | `moderate_comments` |
 
 ### Site Health
-| Ability | Description | Required Capability |
-|---|---|---|
-| `wp-mcp/site-health-check` | Run WordPress's built-in health tests; returns results grouped by severity (critical / recommended / good) | `read` |
+| Ability                    | Description                                                                                                | Required Capability |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------- |
+| `wp-mcp/site-health-check` | Run WordPress's built-in health tests; returns results grouped by severity (critical / recommended / good) | `read`              |
 
 ### Security Audit
-| Ability | Description | Required Capability |
-|---|---|---|
-| `wp-mcp/security-audit` | Check for common security issues: debug mode, file editor, SSL, admin username, WP/plugin version currency, XMLRPC, and auth key strength | `read` |
+| Ability                 | Description                                                                                                                               | Required Capability |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `wp-mcp/security-audit` | Check for common security issues: debug mode, file editor, SSL, admin username, WP/plugin version currency, XMLRPC, and auth key strength | `read`              |
 
 Returns findings in `fail` / `warn` / `pass` buckets with actionable descriptions.
 
 ### SEO Analysis
-| Ability | Description | Required Capability |
-|---|---|---|
-| `wp-mcp/seo-analyze-post` | Analyze a single post or page: title length, word count, meta description, focus keyword placement, image alt text, internal links, slug length | `edit_posts` |
-| `wp-mcp/seo-site-overview` | Site-wide SEO snapshot: sitemap and robots.txt accessibility, count of published posts missing Yoast focus keyword or meta description | `read` |
+| Ability                    | Description                                                                                                                                     | Required Capability |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `wp-mcp/seo-analyze-post`  | Analyze a single post or page: title length, word count, meta description, focus keyword placement, image alt text, internal links, slug length | `edit_posts`        |
+| `wp-mcp/seo-site-overview` | Site-wide SEO snapshot: sitemap and robots.txt accessibility, count of published posts missing Yoast focus keyword or meta description          | `read`              |
 
 **With Yoast SEO installed:** all checks run fully, including meta description and focus keyword analysis per post, site-wide counts of unoptimized content, and Yoast sitemap verification.
 
@@ -101,12 +112,12 @@ Returns findings in `fail` / `warn` / `pass` buckets with actionable description
 
 ## Requirements
 
-| Requirement | Version |
-|---|---|
-| WordPress | 6.9+ |
-| PHP | 7.4+ |
-| [MCP Adapter plugin](https://github.com/WordPress/mcp-adapter) | Latest |
-| [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/) | Optional — structural SEO checks work without it; meta description, focus keyword, and sitemap checks require it |
+| Requirement                                                    | Version                                                                                                          |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| WordPress                                                      | 6.9+                                                                                                             |
+| PHP                                                            | 7.4+                                                                                                             |
+| [MCP Adapter plugin](https://github.com/WordPress/mcp-adapter) | Latest                                                                                                           |
+| [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/)      | Optional — structural SEO checks work without it; meta description, focus keyword, and sitemap checks require it |
 
 ---
 
