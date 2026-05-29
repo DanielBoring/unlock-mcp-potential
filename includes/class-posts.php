@@ -225,6 +225,9 @@ class WP_MCP_Posts {
 			$update_props['tag_ids']      = [ 'type' => 'array', 'items' => [ 'type' => 'integer' ] ];
 		}
 
+		$update_props['yoast_meta_description'] = [ 'type' => 'string', 'description' => 'Yoast SEO meta description (stored as _yoast_wpseo_metadesc)' ];
+		$update_props['yoast_focus_keyword']    = [ 'type' => 'string', 'description' => 'Yoast SEO focus keyword (stored as _yoast_wpseo_focuskw)' ];
+
 		wp_register_ability( "wp-mcp/update-{$type}", [
 			'label'               => "Update {$label}",
 			'description'         => "Update an existing WordPress {$type}.",
@@ -277,6 +280,13 @@ class WP_MCP_Posts {
 					if ( isset( $input['tag_ids'] ) ) {
 						wp_set_post_tags( $id, array_map( 'absint', (array) $input['tag_ids'] ) );
 					}
+				}
+
+				if ( isset( $input['yoast_meta_description'] ) ) {
+					update_post_meta( $id, '_yoast_wpseo_metadesc', sanitize_text_field( $input['yoast_meta_description'] ) );
+				}
+				if ( isset( $input['yoast_focus_keyword'] ) ) {
+					update_post_meta( $id, '_yoast_wpseo_focuskw', sanitize_text_field( $input['yoast_focus_keyword'] ) );
 				}
 
 				return [ 'success' => true, 'data' => self::normalize( $id ) ];
