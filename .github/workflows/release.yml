@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Build plugin zip
+        run: |
+          mkdir -p build/wp-mcp-abilities
+          rsync -r \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.gitignore' \
+            --exclude='.gitattributes' \
+            --exclude='README.md' \
+            --exclude='BACKLOG.md' \
+            --exclude='build' \
+            . build/wp-mcp-abilities/
+          cd build
+          zip -r ../wp-mcp-abilities-${{ steps.version.outputs.version }}.zip wp-mcp-abilities/
+
+      - name: Extract changelog for this version
+        id: changelog
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          notes=$(awk "/^= ${version} =/{found=1; next} found && /^= /{exit} found{print}" readme.txt | sed '/^$/d')
+          {
+            echo "notes<<EOF"
+            echo "$notes"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: v${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.notes }}
+          files: wp-mcp-abilities-${{ steps.version.outputs.version }}.zip
+          draft: false
+          prerelease: false
