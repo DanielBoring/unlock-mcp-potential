@@ -1,4 +1,4 @@
-=== MCP Abilities for WordPress ===
+=== MCP Adapter Abilities ===
 Contributors: deboring
 Tags: mcp, ai, automation, content-management, artificial-intelligence
 Requires at least: 6.9
@@ -94,7 +94,7 @@ Delete operations for posts and pages move content to trash, not permanent delet
 == Changelog ==
 
 = 1.3.4 =
-* Rename plugin to "MCP Abilities for WordPress" to comply with WordPress.org naming guidelines
+* Rename plugin to "MCP Adapter Abilities" to comply with WordPress.org naming guidelines
 
 = 1.3.3 =
 * Update "Tested up to" to WordPress 7.0
@@ -119,7 +119,7 @@ Delete operations for posts and pages move content to trash, not permanent delet
 == Upgrade Notice ==
 
 = 1.3.4 =
-Plugin renamed to "MCP Abilities for WordPress".
+Plugin renamed to "MCP Adapter Abilities".
 
 = 1.3.3 =
 Updates tested up to WordPress 7.0.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: MCP Abilities for WordPress
+ * Plugin Name: MCP Adapter Abilities
  * Plugin URI:  https://github.com/DanielBoring/wordpress-mcp-abilities
  * Description: Adds core content management abilities to the official WordPress MCP Adapter plugin, giving AI agents full editorial access: posts, pages, taxonomy, comments, health checks, security auditing, and SEO analysis.
  * Version:     1.3.4
@@ -10,7 +10,7 @@
  * Author URI:  https://www.virtuallyboring.com
  * License:     GPL-2.0+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: mcp-abilities-for-wordpress
+ * Text Domain: mcp-adapter-abilities
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -20,7 +20,7 @@ add_action( 'admin_notices', function () {
 		echo '<div class="notice notice-error"><p>' . wp_kses(
 				sprintf(
 					/* translators: %s: URL to MCP Adapter plugin page */
-					__( '<strong>MCP Abilities for WordPress</strong> requires the <a href="%s">MCP Adapter</a> plugin to be installed and active.', 'mcp-abilities-for-wordpress' ),
+					__( '<strong>MCP Adapter Abilities</strong> requires the <a href="%s">MCP Adapter</a> plugin to be installed and active.', 'mcp-adapter-abilities' ),
 					'https://wordpress.org/plugins/mcp-adapter/'
 				),
 				[ 'strong' => [], 'a' => [ 'href' => [] ] ]
