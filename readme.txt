@@ -4,7 +4,7 @@ Tags: mcp, ai, automation, content-management, artificial-intelligence
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.3.1
+Stable tag: 1.4.0
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,7 @@ Adds content management abilities to the WordPress MCP Adapter, giving AI agents
 
 WordPress MCP Abilities is a companion plugin for the official [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities out of the box. Any tools an AI agent can actually call must come from plugins that register them. This plugin fills that gap, giving your AI agent the tools to take action: publish a draft, run a security audit, check site health, or analyze a post's SEO.
 
-WordPress MCP Abilities registers abilities across seven groups, giving AI agents (such as Claude) a full working vocabulary for your WordPress site:
+WordPress MCP Abilities registers abilities across eight groups, giving AI agents (such as Claude) a full working vocabulary for your WordPress site:
 
 **Posts**
 Create, read, update, and delete posts. Supports all statuses including scheduled (future) posts, category and tag assignment, and pagination.
@@ -27,6 +27,9 @@ List, create, and delete categories and tags. Category creation supports parent 
 
 **Comments**
 List comments with filters, approve, trash, or mark as spam — all through the standard WordPress comment moderation flow.
+
+**Media**
+List, inspect, update, and permanently delete media attachments. Supports MIME type and search filters, pagination, alt text updates, title updates, and caption updates.
 
 **Site Health**
 Run WordPress's built-in health tests and get results grouped by severity: critical, recommended, and good.
@@ -74,7 +77,7 @@ No, but behavior differs depending on whether it is active:
 
 = What WordPress user role should I use? =
 
-For the current ability set, use the **Editor** role. It covers all capabilities the plugin currently uses: `edit_posts`, `edit_pages`, `delete_posts`, `delete_pages`, `manage_categories`, `moderate_comments`, and `read`. Administrator is not needed for any of these and gives the AI agent unnecessary access to site settings, user management, and plugin installation.
+For the current ability set, use the **Editor** role. It covers all capabilities the plugin currently uses: `edit_posts`, `edit_pages`, `delete_posts`, `delete_pages`, `upload_files`, `manage_categories`, `moderate_comments`, and `read`. Administrator is not needed for any of these and gives the AI agent unnecessary access to site settings, user management, and plugin installation.
 
 Note on role scope: the `edit_posts` capability is available to Authors as well, but WordPress scopes query results to the authenticated user's own content unless `edit_others_posts` is also present (which Editors have). Use an Author-role account only if you intentionally want the agent limited to content it created. For full site-wide editorial control, use Editor.
 
@@ -88,7 +91,7 @@ After activation, call `mcp-adapter-discover-abilities` from your MCP client. Yo
 
 = Are write operations safe? =
 
-Delete operations for posts and pages move content to trash, not permanent deletion. All inputs are sanitized using WordPress core functions. All operations go through the WordPress API — no direct database queries.
+Delete operations for posts and pages move content to trash. Media delete permanently removes the attachment and its files. All inputs are sanitized using WordPress core functions. All operations go through the WordPress API — no direct database queries.
 
 == Screenshots ==
 
@@ -96,6 +99,10 @@ Delete operations for posts and pages move content to trash, not permanent delet
 2. After: all abilities available — full editorial access to posts, pages, taxonomy, comments, site health, security, and SEO.
 
 == Changelog ==
+
+= 1.4.0 =
+* Add media management abilities: `list-media`, `get-media`, `update-media`, and `delete-media`
+* 28 abilities: posts (5), pages (5), taxonomy (6), comments (4), media (4), site health (1), security audit (1), SEO analysis (2)
 
 = 1.3.1 =
 * Add `yoast_meta_description` and `yoast_focus_keyword` fields to `update-post` and `update-page`
@@ -108,6 +115,9 @@ Delete operations for posts and pages move content to trash, not permanent delet
 * Security audit with fail/warn/pass buckets and remediation guidance
 
 == Upgrade Notice ==
+
+= 1.4.0 =
+Adds media list, get, update, and permanent delete abilities.
 
 = 1.3.1 =
 Adds Yoast meta description and focus keyword fields to update-post and update-page.
