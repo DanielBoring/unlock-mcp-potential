@@ -1,4 +1,4 @@
-# WordPress MCP Abilities — Backlog
+# WP MCP Abilities — Backlog
 
 Open feature requests and bugs are tracked in [GitHub Issues](https://github.com/DanielBoring/wordpress-mcp-abilities/issues).
 

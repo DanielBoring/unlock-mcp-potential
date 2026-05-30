@@ -1,5 +1,5 @@
-=== WordPress MCP Abilities ===
-Contributors: danielboring
+=== WP MCP Abilities ===
+Contributors: deboring
 Tags: mcp, ai, automation, content-management, artificial-intelligence
 Requires at least: 6.9
 Tested up to: 6.9
@@ -7,14 +7,15 @@ Requires PHP: 7.4
 Stable tag: 1.3.1
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Donate link: https://paypal.me/VirtuallyBoring
 
 Adds content management abilities to the WordPress MCP Adapter, giving AI agents full editorial access via the Model Context Protocol.
 
 == Description ==
 
-WordPress MCP Abilities is a companion plugin for the official [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities out of the box. Any tools an AI agent can actually call must come from plugins that register them. This plugin fills that gap, giving your AI agent the tools to take action: publish a draft, run a security audit, check site health, or analyze a post's SEO.
+WP MCP Abilities is a companion plugin for the official [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities out of the box. Any tools an AI agent can actually call must come from plugins that register them. This plugin fills that gap, giving your AI agent the tools to take action: publish a draft, run a security audit, check site health, or analyze a post's SEO.
 
-WordPress MCP Abilities registers abilities across seven groups, giving AI agents (such as Claude) a full working vocabulary for your WordPress site:
+WP MCP Abilities registers abilities across seven groups, giving AI agents (such as Claude) a full working vocabulary for your WordPress site:
 
 **Posts**
 Create, read, update, and delete posts. Supports all statuses including scheduled (future) posts, category and tag assignment, and pagination.
@@ -43,7 +44,7 @@ All abilities enforce WordPress capability checks — an editor cannot call abil
 
 == Installation ==
 
-1. Install and activate the [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin first — WordPress MCP Abilities depends on it.
+1. Install and activate the [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin first — WP MCP Abilities depends on it.
 2. Upload the `wp-mcp-abilities` folder to `/wp-content/plugins/`, or install via **Plugins > Add New > Upload Plugin**.
 3. Activate the plugin through the **Plugins** menu in WordPress.
 4. Create a dedicated WordPress user for your AI agent: go to **Users > Add New User**, set the Role to **Editor**, and save. Using a dedicated account limits access and makes it easy to revoke later.
@@ -58,7 +59,7 @@ This plugin requires a WordPress installation where custom plugins can be instal
 
 = Does this work without the MCP Adapter plugin? =
 
-No. WordPress MCP Abilities extends the official WordPress MCP Adapter plugin. Install and activate it first from the plugin directory.
+No. WP MCP Abilities extends the official WordPress MCP Adapter plugin. Install and activate it first from the plugin directory.
 
 = What MCP clients are supported? =
 

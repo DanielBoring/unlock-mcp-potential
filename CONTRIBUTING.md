@@ -1,4 +1,4 @@
-# Contributing to WordPress MCP Abilities
+# Contributing to WP MCP Abilities
 
 Thanks for your interest in contributing. This document covers how to report bugs, request features, and submit code changes.
 
