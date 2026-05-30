@@ -105,7 +105,7 @@ class WP_MCP_Security {
 		}
 
 		// XMLRPC
-		$xmlrpc_enabled = apply_filters( 'xmlrpc_enabled', true );
+		$xmlrpc_enabled = apply_filters( 'xmlrpc_enabled', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Reading a core WordPress filter, not registering a custom hook.
 		if ( $xmlrpc_enabled ) {
 			$warn[] = [ 'check' => 'xmlrpc', 'label' => 'XML-RPC is enabled', 'detail' => 'XML-RPC can be exploited for brute-force and DDoS amplification. Disable it if not needed.' ];
 		} else {

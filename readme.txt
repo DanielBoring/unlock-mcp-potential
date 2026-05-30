@@ -1,10 +1,10 @@
-=== WP MCP Abilities ===
+=== MCP Abilities for WordPress ===
 Contributors: deboring
 Tags: mcp, ai, automation, content-management, artificial-intelligence
 Requires at least: 6.9
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 1.3.2
+Stable tag: 1.3.4
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://paypal.me/VirtuallyBoring
@@ -93,6 +93,14 @@ Delete operations for posts and pages move content to trash, not permanent delet
 
 == Changelog ==
 
+= 1.3.4 =
+* Rename plugin to "MCP Abilities for WordPress" to comply with WordPress.org naming guidelines
+
+= 1.3.3 =
+* Update "Tested up to" to WordPress 7.0
+* Suppress false positive PHPCS warning on core xmlrpc_enabled filter check
+* Suppress false positive slow query warnings on Yoast meta_query checks
+
 = 1.3.2 =
 * Bump minimum PHP requirement to 8.0 (str_starts_with is unavailable on PHP 7.4)
 * Add parent field support to create-page and update-page abilities
@@ -109,6 +117,12 @@ Delete operations for posts and pages move content to trash, not permanent delet
 * Security audit with fail/warn/pass buckets and remediation guidance
 
 == Upgrade Notice ==
+
+= 1.3.4 =
+Plugin renamed to "MCP Abilities for WordPress".
+
+= 1.3.3 =
+Updates tested up to WordPress 7.0.
 
 = 1.3.2 =
 Requires PHP 8.0+. Adds parent page hierarchy support to create-page and update-page.
