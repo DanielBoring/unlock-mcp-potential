@@ -1,6 +1,6 @@
 <h2 align="center">
-  <img width="80%" alt="WordPress MCP Abilities" src="assets/gh_banner.png"><br/>
-  WordPress MCP Abilities<br/>
+  <img width="80%" alt="WP MCP Abilities" src="assets/gh_banner.png"><br/>
+  WP MCP Abilities<br/>
   <sub>Give your AI agent editorial control over WordPress.</sub>
 </h2>
 
@@ -21,7 +21,7 @@
 
 </div>
 
-**WordPress MCP Abilities** is a companion plugin for the official [MCP Adapter](https://github.com/WordPress/mcp-adapter) by WordPress. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities out of the box. Any tools an AI agent can actually call must come from plugins that register them. This plugin fills that gap, giving your AI agent the tools to take action: publish a draft, run a security audit, check site health, or analyze a post's SEO.
+**WP MCP Abilities** is a companion plugin for the official [MCP Adapter](https://github.com/WordPress/mcp-adapter) by WordPress. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities out of the box. Any tools an AI agent can actually call must come from plugins that register them. This plugin fills that gap, giving your AI agent the tools to take action: publish a draft, run a security audit, check site health, or analyze a post's SEO.
 
 - You want an AI agent to draft, update, or publish posts and pages
 - You want to ask an AI to audit your site's security or health posture
@@ -45,7 +45,7 @@ All abilities available: full editorial access to posts, pages, taxonomy, commen
 **1. Install Official WordPress MCP Adapter Plugin**
 Download the [latest release zip](https://github.com/WordPress/mcp-adapter/releases/latest) → WP Admin → Plugins → Add New → Upload Plugin → Install & Activate
 
-**2. Install WordPress MCP Abilities Plugin**
+**2. Install WP MCP Abilities Plugin**
 Download the [latest release zip](https://github.com/DanielBoring/wordpress-mcp-abilities/releases/latest) → WP Admin → Plugins → Add New → Upload Plugin → Install & Activate
 
 **3. Create a dedicated Editor user**
@@ -79,7 +79,7 @@ MCP Adapter plugin                        ← framework: registers the REST endp
         │
         │  calls wp_register_ability() handlers at runtime
         ▼
-WordPress MCP Abilities plugin            ← this plugin: registers the actual
+WP MCP Abilities plugin               ← this plugin: registers the actual
   (this repo)                                 abilities the AI can call
         │
         │  WordPress core APIs (no direct DB queries)
@@ -201,9 +201,9 @@ Returns findings in `fail` / `warn` / `pass` buckets with actionable description
 
 This plugin depends on MCP Adapter being installed and active. Install it first from the official [WordPress MCP Adapter project](https://github.com/WordPress/mcp-adapter) or its [latest release](https://github.com/WordPress/mcp-adapter/releases/latest), then upload and activate it in **WP Admin → Plugins → Add New → Upload Plugin**.
 
-### 2. Install WordPress MCP Abilities
+### 2. Install WP MCP Abilities
 
-> **Coming soon to the WordPress Plugin Directory** — this plugin has been submitted for review. Once approved, you'll be able to install it directly from **WP Admin → Plugins → Add New** by searching "WordPress MCP Abilities". Until then, use one of the options below.
+> **Coming soon to the WordPress Plugin Directory** — this plugin has been submitted for review. Once approved, you'll be able to install it directly from **WP Admin → Plugins → Add New** by searching "WP MCP Abilities". Until then, use one of the options below.
 
 **Option A — Upload zip (recommended for most sites)**
 

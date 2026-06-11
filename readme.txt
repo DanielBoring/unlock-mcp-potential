@@ -1,20 +1,21 @@
-=== WordPress MCP Abilities ===
-Contributors: danielboring
+=== MCP Adapter Abilities ===
+Contributors: deboring
 Tags: mcp, ai, automation, content-management, artificial-intelligence
 Requires at least: 6.9
-Tested up to: 6.9
-Requires PHP: 7.4
+Tested up to: 7.0
+Requires PHP: 8.0
 Stable tag: 1.4.0
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Donate link: https://paypal.me/VirtuallyBoring
 
 Adds content management abilities to the WordPress MCP Adapter, giving AI agents full editorial access via the Model Context Protocol.
 
 == Description ==
 
-WordPress MCP Abilities is a companion plugin for the official [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities out of the box. Any tools an AI agent can actually call must come from plugins that register them. This plugin fills that gap, giving your AI agent the tools to take action: publish a draft, run a security audit, check site health, or analyze a post's SEO.
+WP MCP Abilities is a companion plugin for the official [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin. The MCP Adapter is a transport framework — it handles the MCP session, REST endpoint, and protocol routing — but ships with no content management abilities out of the box. Any tools an AI agent can actually call must come from plugins that register them. This plugin fills that gap, giving your AI agent the tools to take action: publish a draft, run a security audit, check site health, or analyze a post's SEO.
 
-WordPress MCP Abilities registers abilities across eight groups, giving AI agents (such as Claude) a full working vocabulary for your WordPress site:
+MCP Adapter Abilities registers abilities across eight groups, giving AI agents (such as Claude) a full working vocabulary for your WordPress site:
 
 **Posts**
 Create, read, update, and delete posts. Supports all statuses including scheduled (future) posts, category and tag assignment, and pagination.
@@ -46,7 +47,7 @@ All abilities enforce WordPress capability checks — an editor cannot call abil
 
 == Installation ==
 
-1. Install and activate the [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin first — WordPress MCP Abilities depends on it.
+1. Install and activate the [MCP Adapter](https://wordpress.org/plugins/mcp-adapter/) plugin first — WP MCP Abilities depends on it.
 2. Upload the `wp-mcp-abilities` folder to `/wp-content/plugins/`, or install via **Plugins > Add New > Upload Plugin**.
 3. Activate the plugin through the **Plugins** menu in WordPress.
 4. Create a dedicated WordPress user for your AI agent: go to **Users > Add New User**, set the Role to **Editor**, and save. Using a dedicated account limits access and makes it easy to revoke later.
@@ -61,7 +62,7 @@ This plugin requires a WordPress installation where custom plugins can be instal
 
 = Does this work without the MCP Adapter plugin? =
 
-No. WordPress MCP Abilities extends the official WordPress MCP Adapter plugin. Install and activate it first from the plugin directory.
+No. WP MCP Abilities extends the official WordPress MCP Adapter plugin. Install and activate it first from the plugin directory.
 
 = What MCP clients are supported? =
 
@@ -93,16 +94,24 @@ After activation, call `mcp-adapter-discover-abilities` from your MCP client. Yo
 
 Delete operations for posts and pages move content to trash. Media delete permanently removes the attachment and its files. All inputs are sanitized using WordPress core functions. All operations go through the WordPress API — no direct database queries.
 
-== Screenshots ==
-
-1. Before: only the MCP Adapter's 3 meta/discovery abilities are visible — no content tools.
-2. After: all abilities available — full editorial access to posts, pages, taxonomy, comments, site health, security, and SEO.
-
 == Changelog ==
 
 = 1.4.0 =
 * Add media management abilities: `list-media`, `get-media`, `update-media`, and `delete-media`
 * 28 abilities: posts (5), pages (5), taxonomy (6), comments (4), media (4), site health (1), security audit (1), SEO analysis (2)
+
+= 1.3.4 =
+* Rename plugin to "MCP Adapter Abilities" to comply with WordPress.org naming guidelines
+
+= 1.3.3 =
+* Update "Tested up to" to WordPress 7.0
+* Suppress false positive PHPCS warning on core xmlrpc_enabled filter check
+* Suppress false positive slow query warnings on Yoast meta_query checks
+
+= 1.3.2 =
+* Bump minimum PHP requirement to 8.0 (str_starts_with is unavailable on PHP 7.4)
+* Add parent field support to create-page and update-page abilities
+* Replace PHP date() with wp_date() per WordPress coding standards
 
 = 1.3.1 =
 * Add `yoast_meta_description` and `yoast_focus_keyword` fields to `update-post` and `update-page`
@@ -118,6 +127,15 @@ Delete operations for posts and pages move content to trash. Media delete perman
 
 = 1.4.0 =
 Adds media list, get, update, and permanent delete abilities.
+
+= 1.3.4 =
+Plugin renamed to "MCP Adapter Abilities".
+
+= 1.3.3 =
+Updates tested up to WordPress 7.0.
+
+= 1.3.2 =
+Requires PHP 8.0+. Adds parent page hierarchy support to create-page and update-page.
 
 = 1.3.1 =
 Adds Yoast meta description and focus keyword fields to update-post and update-page.

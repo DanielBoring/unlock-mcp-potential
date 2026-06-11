@@ -203,7 +203,7 @@ class WP_MCP_SEO {
 		$data['robots_txt'] = [ 'url' => $robots_url, 'accessible' => $robots_ok ];
 
 		// Published posts missing Yoast focus keyword
-		$no_keyword = new WP_Query( [
+		$no_keyword = new WP_Query( [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Querying Yoast fields; only runs on explicit admin request.
 			'post_type'      => [ 'post', 'page' ],
 			'post_status'    => 'publish',
 			'posts_per_page' => 50,
@@ -227,7 +227,7 @@ class WP_MCP_SEO {
 		];
 
 		// Posts with no Yoast meta description
-		$no_desc = new WP_Query( [
+		$no_desc = new WP_Query( [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Querying Yoast fields; only runs on explicit admin request.
 			'post_type'      => [ 'post', 'page' ],
 			'post_status'    => 'publish',
 			'posts_per_page' => 50,

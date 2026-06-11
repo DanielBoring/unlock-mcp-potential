@@ -1,16 +1,16 @@
 <?php
 /**
- * Plugin Name: WordPress MCP Abilities
+ * Plugin Name: MCP Adapter Abilities
  * Plugin URI:  https://github.com/DanielBoring/wordpress-mcp-abilities
  * Description: Adds core content management abilities to the official WordPress MCP Adapter plugin, giving AI agents full editorial access: posts, pages, taxonomy, comments, health checks, security auditing, and SEO analysis.
  * Version:     1.4.0
  * Requires at least: 6.9
- * Requires PHP: 7.4
+ * Requires PHP: 8.0
  * Author:      Daniel Boring
- * Author URI:  https://github.com/DanielBoring
+ * Author URI:  https://www.virtuallyboring.com
  * License:     GPL-2.0+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: wp-mcp-abilities
+ * Text Domain: mcp-adapter-abilities
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -20,7 +20,7 @@ add_action( 'admin_notices', function () {
 		echo '<div class="notice notice-error"><p>' . wp_kses(
 				sprintf(
 					/* translators: %s: URL to MCP Adapter plugin page */
-					__( '<strong>WordPress MCP Abilities</strong> requires the <a href="%s">MCP Adapter</a> plugin to be installed and active.', 'wp-mcp-abilities' ),
+					__( '<strong>MCP Adapter Abilities</strong> requires the <a href="%s">MCP Adapter</a> plugin to be installed and active.', 'mcp-adapter-abilities' ),
 					'https://wordpress.org/plugins/mcp-adapter/'
 				),
 				[ 'strong' => [], 'a' => [ 'href' => [] ] ]
@@ -32,7 +32,7 @@ add_action( 'admin_notices', function () {
 add_action( 'wp_abilities_api_categories_init', function () {
 	wp_register_ability_category( 'wp-mcp', array(
 		'label'       => 'WP MCP',
-		'description' => 'WordPress content management abilities registered by WordPress MCP Abilities.',
+		'description' => 'WordPress content management abilities registered by WP MCP Abilities.',
 	) );
 } );
 
