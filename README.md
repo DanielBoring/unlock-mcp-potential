@@ -102,7 +102,7 @@ Each ability enforces a WordPress capability check. The table below maps standar
 | Role          | Plugin-relevant capabilities provided                                    | Suitable for                                                        |
 | ------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------- |
 | Subscriber    | `read`                                                                   | Read-only workflows: taxonomy browsing, health checks, SEO overview |
-| Author        | `edit_posts`, `delete_posts`                                             | Creating and managing the agent's own posts only                    |
+| Author        | `edit_posts`, `delete_posts`, `upload_files`                             | Creating and managing the agent's own posts and media               |
 | **Editor** ✓  | All Author caps + `edit_pages`, `delete_pages`, `manage_categories`, `moderate_comments` | **Full editorial control — recommended default** |
 | Administrator | All Editor caps, plus extra administrative capabilities not required by the current ability set | Future admin-only audit workflows, if added |
 
@@ -147,6 +147,16 @@ Each ability enforces a WordPress capability check. The table below maps standar
 | `wp-mcp/approve-comment` | Approve a comment                                 | `moderate_comments` | Editor    |
 | `wp-mcp/trash-comment`   | Move a comment to trash                           | `moderate_comments` | Editor    |
 | `wp-mcp/spam-comment`    | Mark a comment as spam                            | `moderate_comments` | Editor    |
+
+### Media
+| Ability                | Description                                             | Required Capability | Min. Role |
+| ---------------------- | ------------------------------------------------------- | ------------------- | --------- |
+| `wp-mcp/list-media`    | List media items with filters (MIME type, search, pagination) | `upload_files`      | Author    |
+| `wp-mcp/get-media`     | Get a single media item by ID                           | `upload_files`      | Author    |
+| `wp-mcp/update-media`  | Update media alt text, title, and caption               | `upload_files`      | Author    |
+| `wp-mcp/delete-media`  | Permanently delete a media item                         | `delete_posts`      | Author    |
+
+† Author-role access is scoped to media owned by the authenticated user. Use **Editor** to manage media site-wide.
 
 ### Site Health
 | Ability                    | Description                                                                                                | Required Capability | Min. Role  |
@@ -223,7 +233,7 @@ It is recommended to create a dedicated user for your AI agent rather than using
 3. Set the **Role** to **Editor**
 4. Click **Add New User**
 
-> **Why Editor and not Administrator?** The Editor role covers all capabilities used by the current ability set (`edit_posts`, `edit_pages`, `delete_posts`, `delete_pages`, `manage_categories`, `moderate_comments`, `read`). For planned audit abilities — database health, performance status, backup status, plugin audit, and user access audit — an Administrator account will be required, as those abilities need `manage_options`, `activate_plugins`, or `edit_users`. If you plan to use those abilities, create a separate Administrator service account and keep the Editor account for content workflows. See the [Role overview](#role-overview) for the full breakdown.
+> **Why Editor and not Administrator?** The Editor role covers all capabilities used by the current ability set (`edit_posts`, `edit_pages`, `delete_posts`, `delete_pages`, `upload_files`, `manage_categories`, `moderate_comments`, `read`). For planned audit abilities — database health, performance status, backup status, plugin audit, and user access audit — an Administrator account will be required, as those abilities need `manage_options`, `activate_plugins`, or `edit_users`. If you plan to use those abilities, create a separate Administrator service account and keep the Editor account for content workflows. See the [Role overview](#role-overview) for the full breakdown.
 
 ### 4. Create an application password
 
