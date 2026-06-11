@@ -16,36 +16,36 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Set up Docker Compose
-        run: docker-compose --version
+        run: docker compose version
       
       - name: Start WordPress stack
         run: |
-          docker-compose up -d
+          docker compose up -d
           echo "Waiting for services to be healthy..."
           sleep 10
       
       - name: Install WP-CLI inside container
         run: |
-          docker-compose exec -T wordpress bash -c "curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp"
+          docker compose exec -T wordpress bash -c "curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp"
       
       - name: Install MCP Adapter
         run: |
-          docker-compose exec -T wordpress wp plugin install https://github.com/DanielBoring/wordpress-mcp-adapter/releases/download/v0.5.0/wordpress-mcp-adapter.zip --activate
+          docker compose exec -T wordpress wp plugin install https://github.com/DanielBoring/wordpress-mcp-adapter/releases/download/v0.5.0/wordpress-mcp-adapter.zip --activate
       
       - name: Activate wordpress-mcp-abilities plugin
         run: |
-          docker-compose exec -T wordpress wp plugin activate wordpress-mcp-abilities
+          docker compose exec -T wordpress wp plugin activate wordpress-mcp-abilities
       
       - name: Create test users
         run: |
-          docker-compose exec -T wordpress wp user create author_test author@test.local --user_pass=password123 --role=author --porcelain || true
-          docker-compose exec -T wordpress wp user create editor_test editor@test.local --user_pass=password123 --role=editor --porcelain || true
-          docker-compose exec -T wordpress wp user create subscriber_test subscriber@test.local --user_pass=password123 --role=subscriber --porcelain || true
+          docker compose exec -T wordpress wp user create author_test author@test.local --user_pass=password123 --role=author --porcelain || true
+          docker compose exec -T wordpress wp user create editor_test editor@test.local --user_pass=password123 --role=editor --porcelain || true
+          docker compose exec -T wordpress wp user create subscriber_test subscriber@test.local --user_pass=password123 --role=subscriber --porcelain || true
       
       - name: Run E2E tests
         id: e2e
         run: |
-          docker-compose exec -T wordpress bash -c "
+          docker compose exec -T wordpress bash -c "
           echo '=== Testing List Media (Author) ==='
           AUTHOR_ID=\$(wp user get author_test --field=ID)
           wp mcp call wp-mcp/list-media '{\"search\":\"\"}' --user_id=\$AUTHOR_ID || true
@@ -70,7 +70,7 @@ jobs:
         if: always()
         run: |
           echo "=== WordPress Debug Log ==="
-          docker-compose exec -T wordpress cat /var/www/html/wp-content/debug.log || echo "No debug log found"
+          docker compose exec -T wordpress cat /var/www/html/wp-content/debug.log || echo "No debug log found"
         continue-on-error: true
       
       - name: Generate test report
@@ -124,7 +124,7 @@ jobs:
       
       - name: Clean up
         if: always()
-        run: docker-compose down -v
+        run: docker compose down -v
       
       - name: Report QA status
         if: failure()
