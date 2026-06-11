@@ -27,7 +27,7 @@ class WP_MCP_Users {
 		];
 	}
 
-	private static function permission() {
+	public static function permission() {
 		if ( ! current_user_can( 'list_users' ) ) {
 			return new WP_Error( 'forbidden', 'Requires list_users capability.' );
 		}
