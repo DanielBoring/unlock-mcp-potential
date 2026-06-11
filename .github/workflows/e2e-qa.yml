@@ -71,6 +71,12 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
+    outputs:
+      wordpress-image: ${{ steps.versions.outputs.wordpress-image }}
+      wordpress-version: ${{ steps.versions.outputs.wordpress-version }}
+      php-version: ${{ steps.versions.outputs.php-version }}
+      mcp-adapter-version: ${{ steps.versions.outputs.mcp-adapter-version }}
+      plugin-version: ${{ steps.versions.outputs.plugin-version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
@@ -86,6 +92,25 @@ jobs:
 
       - name: Run E2E tests
         run: bash scripts/e2e-test.sh
+
+      - name: Collect tested versions
+        id: versions
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          wordpress_image="$(docker compose config | awk '$1 == "image:" && $2 ~ /^wordpress:/ { print $2; exit }')"
+          wordpress_version="$(docker compose exec -T wordpress wp --allow-root core version 2>/dev/null || echo unknown)"
+          php_version="$(docker compose exec -T wordpress php -r 'echo PHP_VERSION;' 2>/dev/null || echo unknown)"
+          mcp_adapter_version="$(docker compose exec -T wordpress wp --allow-root plugin get mcp-adapter --field=version 2>/dev/null || echo unknown)"
+          plugin_version="$(docker compose exec -T wordpress wp --allow-root plugin get wordpress-mcp-abilities --field=version 2>/dev/null || echo unknown)"
+          {
+            echo "wordpress-image=${wordpress_image:-unknown}"
+            echo "wordpress-version=${wordpress_version:-unknown}"
+            echo "php-version=${php_version:-unknown}"
+            echo "mcp-adapter-version=${mcp_adapter_version:-unknown}"
+            echo "plugin-version=${plugin_version:-unknown}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Check WordPress debug log for errors
         if: always()
@@ -112,14 +137,26 @@ jobs:
           REPO: ${{ github.event.repository.name }}
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
           E2E_RESULT: ${{ needs.e2e-test.result }}
+          WORDPRESS_IMAGE: ${{ needs.e2e-test.outputs.wordpress-image }}
+          WORDPRESS_VERSION: ${{ needs.e2e-test.outputs.wordpress-version }}
+          PHP_VERSION: ${{ needs.e2e-test.outputs.php-version }}
+          MCP_ADAPTER_VERSION: ${{ needs.e2e-test.outputs.mcp-adapter-version }}
+          PLUGIN_VERSION: ${{ needs.e2e-test.outputs.plugin-version }}
         shell: bash
         run: |
           set -euo pipefail
+          VERSIONS=$'\n\n### Tested versions\n\n'
+          VERSIONS+="- WordPress Docker image: ${WORDPRESS_IMAGE:-unknown}"$'\n'
+          VERSIONS+="- WordPress core: ${WORDPRESS_VERSION:-unknown}"$'\n'
+          VERSIONS+="- PHP: ${PHP_VERSION:-unknown}"$'\n'
+          VERSIONS+="- MCP Adapter: ${MCP_ADAPTER_VERSION:-unknown}"$'\n'
+          VERSIONS+="- WP MCP Abilities: ${PLUGIN_VERSION:-unknown}"
           if [ "$E2E_RESULT" = "success" ]; then
             BODY=$'## E2E QA Tests Passed\n\n- Docker WordPress stack started\n- WordPress core installed before plugin activation\n- MCP Adapter installed from official WordPress release asset\n- Ability execution tests passed\n- PHP syntax checks passed\n- WordPress debug log scan found no fatal/error-level entries'
           else
             BODY=$"## E2E QA Tests Failed\n\n- Result: ${E2E_RESULT}\n- Review this workflow run for the failed setup/test phase details."
           fi
+          BODY+="$VERSIONS"
           gh api "repos/$OWNER/$REPO/issues/$ISSUE_NUMBER/comments" --method POST -f body="$BODY"
 
   skip-summary:
