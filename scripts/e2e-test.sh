@@ -13,6 +13,10 @@ compose() {
   fi
 }
 
+wp() {
+  compose exec -T wordpress wp --allow-root "$@"
+}
+
 echo "================================"
 echo "E2E Test Suite: WordPress MCP Abilities"
 echo "================================"
@@ -40,8 +44,8 @@ wait_for_wordpress
 # Install MCP Adapter plugin (if not already present)
 install_mcp_adapter() {
   echo "Installing MCP Adapter plugin..."
-  compose exec -T wordpress wp plugin list --format=csv --fields=name | grep -q "mcp-adapter" || {
-    compose exec -T wordpress wp plugin install https://github.com/DanielBoring/wordpress-mcp-adapter/releases/download/v0.5.0/wordpress-mcp-adapter.zip --activate
+  wp plugin list --format=csv --fields=name | grep -q "mcp-adapter" || {
+    wp plugin install https://github.com/DanielBoring/wordpress-mcp-adapter/releases/download/v0.5.0/wordpress-mcp-adapter.zip --activate
   }
 }
 
@@ -49,25 +53,25 @@ install_mcp_adapter
 
 # Activate our plugin
 echo "Activating plugin..."
-compose exec -T wordpress wp plugin activate $PLUGIN_SLUG
+wp plugin activate $PLUGIN_SLUG
 
 # Create test users
 echo "Creating test users..."
-compose exec -T wordpress wp user create author_test author@test.local --user_pass=password123 --role=author --porcelain || true
-compose exec -T wordpress wp user create editor_test editor@test.local --user_pass=password123 --role=editor --porcelain || true
-compose exec -T wordpress wp user create subscriber_test subscriber@test.local --user_pass=password123 --role=subscriber --porcelain || true
+wp user create author_test author@test.local --user_pass=password123 --role=author --porcelain || true
+wp user create editor_test editor@test.local --user_pass=password123 --role=editor --porcelain || true
+wp user create subscriber_test subscriber@test.local --user_pass=password123 --role=subscriber --porcelain || true
 
 # Get user IDs
-AUTHOR_ID=$(compose exec -T wordpress wp user get author_test --field=ID)
-EDITOR_ID=$(compose exec -T wordpress wp user get editor_test --field=ID)
-SUBSCRIBER_ID=$(compose exec -T wordpress wp user get subscriber_test --field=ID)
+AUTHOR_ID=$(wp user get author_test --field=ID)
+EDITOR_ID=$(wp user get editor_test --field=ID)
+SUBSCRIBER_ID=$(wp user get subscriber_test --field=ID)
 
 echo "Created users: Author=$AUTHOR_ID, Editor=$EDITOR_ID, Subscriber=$SUBSCRIBER_ID"
 
 # Create test posts/attachments
 echo "Creating test content..."
-AUTHOR_POST=$(compose exec -T wordpress wp post create --post_type=post --post_title="Author Test Post" --post_author=$AUTHOR_ID --post_status=publish --porcelain)
-EDITOR_POST=$(compose exec -T wordpress wp post create --post_type=post --post_title="Editor Test Post" --post_author=$EDITOR_ID --post_status=publish --porcelain)
+AUTHOR_POST=$(wp post create --post_type=post --post_title="Author Test Post" --post_author=$AUTHOR_ID --post_status=publish --porcelain)
+EDITOR_POST=$(wp post create --post_type=post --post_title="Editor Test Post" --post_author=$EDITOR_ID --post_status=publish --porcelain)
 
 echo "Created posts: Author=$AUTHOR_POST, Editor=$EDITOR_POST"
 
@@ -86,7 +90,7 @@ test_ability() {
   
   echo -n "Testing $name (user_id=$user_id)... "
   
-  RESULT=$(compose exec -T wordpress wp mcp call "wp-mcp/$method" "$params" --user_id=$user_id --format=json 2>&1)
+  RESULT=$(wp mcp call "wp-mcp/$method" "$params" --user_id=$user_id --format=json 2>&1)
   
   if [[ $should_fail -eq 1 ]]; then
     if echo "$RESULT" | grep -q "error\|Error\|denied"; then
@@ -119,12 +123,12 @@ echo "=== AUTHORIZATION TESTS ==="
 
 # Test Author cannot list Editor's attachments
 echo "Auth: Author should only see own media..."
-AUTHOR_MEDIA=$(compose exec -T wordpress wp mcp call wp-mcp/list-media '{"search":""}' --user_id=$AUTHOR_ID --format=json | jq '.data.attachments | length')
+AUTHOR_MEDIA=$(wp mcp call wp-mcp/list-media '{"search":""}' --user_id=$AUTHOR_ID --format=json | jq '.data.attachments | length')
 echo "✓ Author can list media"
 
 # Test Editor can list all media
 echo "Auth: Editor should see all media..."
-EDITOR_MEDIA=$(compose exec -T wordpress wp mcp call wp-mcp/list-media '{"search":""}' --user_id=$EDITOR_ID --format=json | jq '.data.attachments | length')
+EDITOR_MEDIA=$(wp mcp call wp-mcp/list-media '{"search":""}' --user_id=$EDITOR_ID --format=json | jq '.data.attachments | length')
 echo "✓ Editor can list media"
 
 echo ""

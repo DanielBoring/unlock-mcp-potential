@@ -30,39 +30,39 @@ jobs:
       
       - name: Install MCP Adapter
         run: |
-          docker compose exec -T wordpress wp plugin install https://github.com/DanielBoring/wordpress-mcp-adapter/releases/download/v0.5.0/wordpress-mcp-adapter.zip --activate
+          docker compose exec -T wordpress wp --allow-root plugin install https://github.com/DanielBoring/wordpress-mcp-adapter/releases/download/v0.5.0/wordpress-mcp-adapter.zip --activate
       
       - name: Activate wordpress-mcp-abilities plugin
         run: |
-          docker compose exec -T wordpress wp plugin activate wordpress-mcp-abilities
+          docker compose exec -T wordpress wp --allow-root plugin activate wordpress-mcp-abilities
       
       - name: Create test users
         run: |
-          docker compose exec -T wordpress wp user create author_test author@test.local --user_pass=password123 --role=author --porcelain || true
-          docker compose exec -T wordpress wp user create editor_test editor@test.local --user_pass=password123 --role=editor --porcelain || true
-          docker compose exec -T wordpress wp user create subscriber_test subscriber@test.local --user_pass=password123 --role=subscriber --porcelain || true
+          docker compose exec -T wordpress wp --allow-root user create author_test author@test.local --user_pass=password123 --role=author --porcelain || true
+          docker compose exec -T wordpress wp --allow-root user create editor_test editor@test.local --user_pass=password123 --role=editor --porcelain || true
+          docker compose exec -T wordpress wp --allow-root user create subscriber_test subscriber@test.local --user_pass=password123 --role=subscriber --porcelain || true
       
       - name: Run E2E tests
         id: e2e
         run: |
           docker compose exec -T wordpress bash -c "
           echo '=== Testing List Media (Author) ==='
-          AUTHOR_ID=\$(wp user get author_test --field=ID)
-          wp mcp call wp-mcp/list-media '{\"search\":\"\"}' --user_id=\$AUTHOR_ID || true
+          AUTHOR_ID=\$(wp --allow-root user get author_test --field=ID)
+          wp --allow-root mcp call wp-mcp/list-media '{\"search\":\"\"}' --user_id=\$AUTHOR_ID || true
           
           echo ''
           echo '=== Testing List Media (Editor) ==='
-          EDITOR_ID=\$(wp user get editor_test --field=ID)
-          wp mcp call wp-mcp/list-media '{\"search\":\"\"}' --user_id=\$EDITOR_ID || true
+          EDITOR_ID=\$(wp --allow-root user get editor_test --field=ID)
+          wp --allow-root mcp call wp-mcp/list-media '{\"search\":\"\"}' --user_id=\$EDITOR_ID || true
           
           echo ''
           echo '=== Testing List Media (Subscriber - should fail) ==='
-          SUBSCRIBER_ID=\$(wp user get subscriber_test --field=ID)
-          wp mcp call wp-mcp/list-media '{\"search\":\"\"}' --user_id=\$SUBSCRIBER_ID || echo 'Expected to fail'
+          SUBSCRIBER_ID=\$(wp --allow-root user get subscriber_test --field=ID)
+          wp --allow-root mcp call wp-mcp/list-media '{\"search\":\"\"}' --user_id=\$SUBSCRIBER_ID || echo 'Expected to fail'
           
           echo ''
           echo '=== Testing List Posts (existing feature) ==='
-          wp mcp call wp-mcp/list-posts '{\"search\":\"\"}' --user_id=1 || true
+          wp --allow-root mcp call wp-mcp/list-posts '{\"search\":\"\"}' --user_id=1 || true
           "
         continue-on-error: true
       
