@@ -217,10 +217,15 @@ $fixtures = array(
 	'delete_tag_id'      => e2e_ensure_term_id( 'mcp-e2e-delete-tag', 'post_tag' ),
 );
 
-$fixtures['post_id']        = e2e_insert_post( 'post', 'MCP E2E Post', 'Content for MCP E2E post.', $author_id );
-$fixtures['delete_post_id'] = e2e_insert_post( 'post', 'MCP E2E Delete Post', 'Delete fixture.', $author_id );
-$fixtures['page_id']        = e2e_insert_post( 'page', 'MCP E2E Page', 'Content for MCP E2E page.', $editor_id );
-$fixtures['delete_page_id'] = e2e_insert_post( 'page', 'MCP E2E Delete Page', 'Delete fixture.', $editor_id );
+$fixtures['post_id']         = e2e_insert_post( 'post', 'MCP E2E Post', 'Content for MCP E2E post.', $author_id );
+$fixtures['delete_post_id']  = e2e_insert_post( 'post', 'MCP E2E Delete Post', 'Delete fixture.', $author_id );
+$fixtures['restore_post_id'] = e2e_insert_post( 'post', 'MCP E2E Restore Post', 'Restore fixture.', $author_id );
+$fixtures['page_id']         = e2e_insert_post( 'page', 'MCP E2E Page', 'Content for MCP E2E page.', $editor_id );
+$fixtures['delete_page_id']  = e2e_insert_post( 'page', 'MCP E2E Delete Page', 'Delete fixture.', $editor_id );
+$fixtures['restore_page_id'] = e2e_insert_post( 'page', 'MCP E2E Restore Page', 'Restore fixture.', $editor_id );
+
+wp_trash_post( $fixtures['restore_post_id'] );
+wp_trash_post( $fixtures['restore_page_id'] );
 
 wp_set_post_categories( $fixtures['post_id'], array( $fixtures['category_id'] ) );
 wp_set_post_tags( $fixtures['post_id'], array( $fixtures['tag_id'] ) );

@@ -111,24 +111,26 @@ Each ability enforces a WordPress capability check. The table below maps standar
 ---
 
 ### Posts
-| Ability              | Description                                                            | Required Capability | Min. Role |
-| -------------------- | ---------------------------------------------------------------------- | ------------------- | --------- |
-| `wp-mcp/list-posts`  | List posts with filters (status, search, author, category, pagination) | `edit_posts`        | Author †  |
-| `wp-mcp/get-post`    | Get a single post by ID                                                | `edit_post`         | Author †  |
-| `wp-mcp/create-post` | Create a new post with title, content, status, categories, tags        | `edit_posts`        | Author    |
-| `wp-mcp/update-post` | Update an existing post                                                | `edit_post`         | Author †  |
-| `wp-mcp/delete-post` | Move a post to trash                                                   | `delete_post`       | Author †  |
+| Ability               | Description                                                            | Required Capability | Min. Role |
+| --------------------- | ---------------------------------------------------------------------- | ------------------- | --------- |
+| `wp-mcp/list-posts`   | List posts with filters (status, search, author, category, pagination) | `edit_posts`        | Author †  |
+| `wp-mcp/get-post`     | Get a single post by ID                                                | `edit_post`         | Author †  |
+| `wp-mcp/create-post`  | Create a new post with title, content, status, categories, tags        | `edit_posts`        | Author    |
+| `wp-mcp/update-post`  | Update an existing post                                                | `edit_post`         | Author †  |
+| `wp-mcp/delete-post`  | Move a post to trash                                                   | `delete_post`       | Author †  |
+| `wp-mcp/restore-post` | Restore a post from trash                                              | `delete_posts`      | Author    |
 
 † Returns or acts on the service account's own posts only. Use **Editor** to manage all posts site-wide.
 
 ### Pages
-| Ability              | Description             | Required Capability | Min. Role |
-| -------------------- | ----------------------- | ------------------- | --------- |
-| `wp-mcp/list-pages`  | List pages with filters | `edit_pages`        | Editor    |
-| `wp-mcp/get-page`    | Get a single page by ID | `edit_post`         | Editor    |
-| `wp-mcp/create-page` | Create a new page       | `edit_pages`        | Editor    |
-| `wp-mcp/update-page` | Update an existing page | `edit_post`         | Editor    |
-| `wp-mcp/delete-page` | Move a page to trash    | `delete_post`       | Editor    |
+| Ability               | Description               | Required Capability | Min. Role |
+| --------------------- | ------------------------- | ------------------- | --------- |
+| `wp-mcp/list-pages`   | List pages with filters   | `edit_pages`        | Editor    |
+| `wp-mcp/get-page`     | Get a single page by ID   | `edit_post`         | Editor    |
+| `wp-mcp/create-page`  | Create a new page         | `edit_pages`        | Editor    |
+| `wp-mcp/update-page`  | Update an existing page   | `edit_post`         | Editor    |
+| `wp-mcp/delete-page`  | Move a page to trash      | `delete_post`       | Editor    |
+| `wp-mcp/restore-page` | Restore a page from trash | `delete_pages`      | Editor    |
 
 ### Taxonomy
 | Ability                  | Description                         | Required Capability | Min. Role  |
@@ -461,6 +463,6 @@ To confirm everything is working, ask your agent to call a few abilities:
 ## Security
 
 - All abilities enforce WordPress capability checks via `permission_callback`. The ability list reflects what the authenticated user is actually allowed to do — an editor cannot call abilities that require admin caps.
-- `delete-post` and `delete-page` move content to trash, not permanent deletion.
+- `delete-post` and `delete-page` move content to trash, not permanent deletion. Use `restore-post` and `restore-page` to untrash content.
 - Content is sanitized on write: `sanitize_text_field()` for strings, `wp_kses_post()` for HTML content, `absint()` for IDs, and enum validation for status fields.
 - No direct database queries — all reads and writes go through the WordPress API.
