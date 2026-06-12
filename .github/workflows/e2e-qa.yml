@@ -52,7 +52,7 @@ jobs:
 
           printf '%s\n' "$CHANGED_FILES"
 
-          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^(\.github/workflows/e2e-qa\.yml|docker-compose\.yml|scripts/e2e-test\.sh|includes/|wp-mcp-abilities\.php|readme\.txt|assets/)'; then
+          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^(\.github/workflows/e2e-qa\.yml|docker-compose\.yml|scripts/e2e-test\.sh|tests/e2e/|includes/|wp-mcp-abilities\.php|readme\.txt|assets/)'; then
             echo "should-run=true" >> "$GITHUB_OUTPUT"
           else
             echo "should-run=false" >> "$GITHUB_OUTPUT"
@@ -80,6 +80,10 @@ jobs:
       mcp-adapter-release: ${{ steps.versions.outputs.mcp-adapter-release }}
       mcp-adapter-version: ${{ steps.versions.outputs.mcp-adapter-version }}
       plugin-version: ${{ steps.versions.outputs.plugin-version }}
+      registered-abilities: ${{ steps.versions.outputs.registered-abilities }}
+      covered-abilities: ${{ steps.versions.outputs.covered-abilities }}
+      test-cases: ${{ steps.versions.outputs.test-cases }}
+      negative-cases: ${{ steps.versions.outputs.negative-cases }}
     steps:
       - name: Checkout code
         uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
@@ -110,6 +114,11 @@ jobs:
           mcp_adapter_release="$(grep '^MCP_ADAPTER_ZIP=' scripts/e2e-test.sh | sed -E 's#.*releases/download/([^/]+)/.*#\1#')"
           mcp_adapter_version="$(docker compose exec -T wordpress wp --allow-root plugin get mcp-adapter --field=version 2>/dev/null || echo unknown)"
           plugin_version="$(docker compose exec -T wordpress wp --allow-root plugin get wordpress-mcp-abilities --field=version 2>/dev/null || echo unknown)"
+          summary_file="e2e-artifacts/e2e-summary.json"
+          registered_abilities="$(jq -r '.registered_abilities // "unknown"' "$summary_file" 2>/dev/null || echo unknown)"
+          covered_abilities="$(jq -r '.covered_abilities // "unknown"' "$summary_file" 2>/dev/null || echo unknown)"
+          test_cases="$(jq -r '.test_cases // "unknown"' "$summary_file" 2>/dev/null || echo unknown)"
+          negative_cases="$(jq -r '.negative_cases // "unknown"' "$summary_file" 2>/dev/null || echo unknown)"
           {
             echo "wordpress-image=${wordpress_image:-unknown}"
             echo "wordpress-version=${wordpress_version:-unknown}"
@@ -119,6 +128,10 @@ jobs:
             echo "mcp-adapter-release=${mcp_adapter_release:-unknown}"
             echo "mcp-adapter-version=${mcp_adapter_version:-unknown}"
             echo "plugin-version=${plugin_version:-unknown}"
+            echo "registered-abilities=${registered_abilities:-unknown}"
+            echo "covered-abilities=${covered_abilities:-unknown}"
+            echo "test-cases=${test_cases:-unknown}"
+            echo "negative-cases=${negative_cases:-unknown}"
           } >> "$GITHUB_OUTPUT"
 
       - name: Check WordPress debug log for errors
@@ -127,9 +140,25 @@ jobs:
           echo "=== WordPress Debug Log ==="
           docker compose exec -T wordpress cat /var/www/html/wp-content/debug.log || true
 
+      - name: Collect E2E failure artifacts
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p e2e-artifacts
+          docker compose logs --no-color > e2e-artifacts/docker-compose.log || true
+          docker compose exec -T wordpress cat /var/www/html/wp-content/debug.log > e2e-artifacts/wordpress-debug.log 2>/dev/null || true
+
       - name: Clean up
         if: always()
         run: docker compose down -v
+
+      - name: Upload E2E failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-failure-artifacts
+          path: e2e-artifacts/
+          if-no-files-found: ignore
 
   comment-pr:
     needs: [changes, e2e-test]
@@ -154,6 +183,10 @@ jobs:
           MCP_ADAPTER_RELEASE: ${{ needs.e2e-test.outputs.mcp-adapter-release }}
           MCP_ADAPTER_VERSION: ${{ needs.e2e-test.outputs.mcp-adapter-version }}
           PLUGIN_VERSION: ${{ needs.e2e-test.outputs.plugin-version }}
+          REGISTERED_ABILITIES: ${{ needs.e2e-test.outputs.registered-abilities }}
+          COVERED_ABILITIES: ${{ needs.e2e-test.outputs.covered-abilities }}
+          TEST_CASES: ${{ needs.e2e-test.outputs.test-cases }}
+          NEGATIVE_CASES: ${{ needs.e2e-test.outputs.negative-cases }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           HEAD_SHA: ${{ github.sha }}
         shell: bash
@@ -170,12 +203,17 @@ jobs:
           VERSIONS+="- WP MCP Abilities: ${PLUGIN_VERSION:-unknown}"$'\n'
           VERSIONS+="- Commit: ${HEAD_SHA:-unknown}"$'\n'
           VERSIONS+="- Workflow run: ${RUN_URL:-unknown}"
+          COVERAGE=$'\n\n### Ability coverage\n\n'
+          COVERAGE+="- Registered wp-mcp abilities: ${REGISTERED_ABILITIES:-unknown}"$'\n'
+          COVERAGE+="- Manifest-covered abilities: ${COVERED_ABILITIES:-unknown}"$'\n'
+          COVERAGE+="- Manifest test cases: ${TEST_CASES:-unknown}"$'\n'
+          COVERAGE+="- Negative permission cases: ${NEGATIVE_CASES:-unknown}"
           if [ "$E2E_RESULT" = "success" ]; then
-            BODY=$'## E2E QA Tests Passed\n\n- Docker WordPress stack started\n- WordPress core installed before plugin activation\n- MCP Adapter installed from official WordPress release asset\n- Ability execution tests passed\n- PHP syntax checks passed\n- WordPress debug log scan found no fatal/error-level entries'
+            BODY=$'## E2E QA Tests Passed\n\n- Docker WordPress stack started\n- WordPress core installed before plugin activation\n- MCP Adapter installed from official WordPress release asset\n- Manifest covers every registered wp-mcp ability\n- Ability execution tests passed\n- PHP syntax checks passed\n- WordPress debug log scan found no fatal/error-level entries'
           else
-            BODY=$"## E2E QA Tests Failed\n\n- Result: ${E2E_RESULT}\n- Review this workflow run for the failed setup/test phase details."
+            BODY=$"## E2E QA Tests Failed\n\n- Result: ${E2E_RESULT}\n- Review this workflow run and uploaded E2E failure artifacts for the failed setup/test phase details."
           fi
-          BODY+="$VERSIONS"
+          BODY+="$COVERAGE$VERSIONS"
           gh api "repos/$OWNER/$REPO/issues/$ISSUE_NUMBER/comments" --method POST -f body="$BODY"
 
   skip-summary:
