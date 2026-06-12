@@ -237,7 +237,7 @@ class Unlock_MCP_Posts {
 					$args['post_parent'] = absint( $input['parent'] );
 				}
 
-				$id = wp_insert_post( $args, true );
+				$id = wp_insert_post( wp_slash( $args ), true );
 
 				if ( is_wp_error( $id ) ) {
 					return [ 'success' => false, 'error' => $id->get_error_message() ];
@@ -331,7 +331,7 @@ class Unlock_MCP_Posts {
 					$args['post_parent'] = absint( $input['parent'] );
 				}
 
-				$result = wp_update_post( $args, true );
+				$result = wp_update_post( wp_slash( $args ), true );
 
 				if ( is_wp_error( $result ) ) {
 					return [ 'success' => false, 'error' => $result->get_error_message() ];

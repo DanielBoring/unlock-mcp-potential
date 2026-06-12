@@ -12,6 +12,10 @@ All notable changes to Unlock MCP Potential are tracked here.
 - Added repository agent instructions for repeatable ability, documentation, changelog, contribution, and validation workflows.
 - Clarified that local agent validation is a preflight check and GitHub Actions remains the authoritative PR validation gate.
 
+### Fixed
+
+- Preserved backslashes in `create-post` and `update-post` content by slashing post data before WordPress insert/update calls.
+
 ## 1.6.0
 
 ### Added
