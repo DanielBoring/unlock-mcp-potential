@@ -4,6 +4,10 @@ All notable changes to Unlock MCP Potential are tracked here.
 
 ## Unreleased
 
+### Fixed
+
+- Preserved backslashes in `create-post` and `update-post` content by slashing post data before WordPress insert/update calls.
+
 ## 1.6.0
 
 ### Added
