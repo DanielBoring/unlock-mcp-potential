@@ -2,8 +2,8 @@
 /**
  * Plugin Name: MCP Adapter Abilities
  * Plugin URI:  https://github.com/DanielBoring/wordpress-mcp-abilities
- * Description: Adds core content management abilities to the official WordPress MCP Adapter plugin, giving AI agents full editorial access: posts, pages, taxonomy, comments, health checks, security auditing, and SEO analysis.
- * Version:     1.4.0
+ * Description: Adds core content management abilities to the official WordPress MCP Adapter plugin, giving AI agents full editorial access: posts, pages, taxonomy, comments, media, user lookup, health checks, security auditing, and SEO analysis.
+ * Version:     1.5.0
  * Requires at least: 6.9
  * Requires PHP: 8.0
  * Author:      Daniel Boring
