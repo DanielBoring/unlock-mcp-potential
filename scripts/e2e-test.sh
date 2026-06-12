@@ -1,150 +1,111 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -Eeuo pipefail
 
-WORDPRESS_URL="http://localhost"
-WP_PATH="/var/www/html"
+WORDPRESS_URL="${WORDPRESS_URL:-http://localhost}"
 PLUGIN_SLUG="wordpress-mcp-abilities"
+MCP_ADAPTER_ZIP="https://github.com/WordPress/mcp-adapter/releases/download/v0.5.0/mcp-adapter.zip"
+E2E_ARTIFACTS_DIR="${E2E_ARTIFACTS_DIR:-e2e-artifacts}"
 
 compose() {
-  if docker compose version >/dev/null 2>&1; then
-    docker compose "$@"
-  else
-    docker-compose "$@"
-  fi
+	if docker compose version >/dev/null 2>&1; then
+		docker compose "$@"
+	else
+		docker-compose "$@"
+	fi
 }
 
 wp() {
-  compose exec -T wordpress wp --allow-root "$@"
+	compose exec -T wordpress wp --allow-root "$@"
+}
+
+wait_for_wordpress_files() {
+	local max_attempts=60
+	local attempt=1
+
+	echo "Waiting for WordPress files..."
+	while [ "$attempt" -le "$max_attempts" ]; do
+		if compose exec -T wordpress test -f /var/www/html/wp-load.php; then
+			echo "WordPress files are ready"
+			return 0
+		fi
+
+		echo "Attempt ${attempt}/${max_attempts}..."
+		attempt=$(( attempt + 1 ))
+		sleep 2
+	done
+
+	echo "WordPress files were not ready in time"
+	return 1
+}
+
+install_wp_cli() {
+	echo "Ensuring WP-CLI is installed..."
+	compose exec -T wordpress bash -lc 'if ! command -v wp >/dev/null 2>&1; then curl -fsSLo /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x /usr/local/bin/wp; fi'
+	wp --info
+}
+
+install_wordpress() {
+	echo "Ensuring WordPress is installed..."
+	if wp core is-installed; then
+		echo "WordPress is already installed"
+		return 0
+	fi
+
+	wp core install \
+		--url="$WORDPRESS_URL" \
+		--title="MCP E2E" \
+		--admin_user=admin \
+		--admin_password=password123 \
+		--admin_email=admin@test.local \
+		--skip-email
+}
+
+install_plugins() {
+	echo "Installing MCP Adapter..."
+	wp plugin install "$MCP_ADAPTER_ZIP" --activate --force
+
+	echo "Activating ${PLUGIN_SLUG}..."
+	wp plugin activate "$PLUGIN_SLUG"
+	wp plugin list --fields=name,status,version --format=table
+}
+
+run_ability_manifest() {
+	echo "Running manifest-driven ability E2E tests..."
+	wp eval-file "/var/www/html/wp-content/plugins/${PLUGIN_SLUG}/tests/e2e/ability-runner.php"
+}
+
+run_php_lint() {
+	echo "Running PHP syntax checks..."
+	compose exec -T wordpress bash -lc "php -l /var/www/html/wp-content/plugins/${PLUGIN_SLUG}/wp-mcp-abilities.php && find /var/www/html/wp-content/plugins/${PLUGIN_SLUG}/includes -name '*.php' -print0 | xargs -0 -n1 php -l"
+}
+
+run_debug_log_check() {
+	echo "Checking WordPress debug log..."
+	if ! compose exec -T wordpress test -f /var/www/html/wp-content/debug.log; then
+		echo "No debug log found"
+		return 0
+	fi
+
+	compose exec -T wordpress bash -lc "cat /var/www/html/wp-content/debug.log"
+	if compose exec -T wordpress bash -lc "grep -Eiq 'fatal error|parse error|uncaught|error' /var/www/html/wp-content/debug.log"; then
+		echo "Debug log contains fatal/error-level entries"
+		return 1
+	fi
 }
 
 echo "================================"
 echo "E2E Test Suite: WordPress MCP Abilities"
 echo "================================"
 
-# Wait for WordPress to be ready
-wait_for_wordpress() {
-  local max_attempts=30
-  local attempt=0
-  echo "Waiting for WordPress to be ready..."
-  while [ $attempt -lt $max_attempts ]; do
-    if curl -s -f "$WORDPRESS_URL/wp-json/" > /dev/null 2>&1; then
-      echo "✓ WordPress is ready"
-      return 0
-    fi
-    attempt=$((attempt + 1))
-    echo "Attempt $attempt/$max_attempts..."
-    sleep 2
-  done
-  echo "✗ WordPress failed to start"
-  exit 1
-}
+rm -rf "$E2E_ARTIFACTS_DIR"
+mkdir -p "$E2E_ARTIFACTS_DIR"
+wait_for_wordpress_files
+install_wp_cli
+install_wordpress
+install_plugins
+compose exec -T wordpress rm -f /var/www/html/wp-content/debug.log
+run_php_lint
+run_ability_manifest
+run_debug_log_check
 
-wait_for_wordpress
-
-# Install MCP Adapter plugin (if not already present)
-install_mcp_adapter() {
-  echo "Installing MCP Adapter plugin..."
-  wp plugin list --format=csv --fields=name | grep -q "mcp-adapter" || {
-    wp plugin install https://github.com/DanielBoring/wordpress-mcp-adapter/releases/download/v0.5.0/wordpress-mcp-adapter.zip --activate
-  }
-}
-
-install_mcp_adapter
-
-# Activate our plugin
-echo "Activating plugin..."
-wp plugin activate $PLUGIN_SLUG
-
-# Create test users
-echo "Creating test users..."
-wp user create author_test author@test.local --user_pass=password123 --role=author --porcelain || true
-wp user create editor_test editor@test.local --user_pass=password123 --role=editor --porcelain || true
-wp user create subscriber_test subscriber@test.local --user_pass=password123 --role=subscriber --porcelain || true
-
-# Get user IDs
-AUTHOR_ID=$(wp user get author_test --field=ID)
-EDITOR_ID=$(wp user get editor_test --field=ID)
-SUBSCRIBER_ID=$(wp user get subscriber_test --field=ID)
-
-echo "Created users: Author=$AUTHOR_ID, Editor=$EDITOR_ID, Subscriber=$SUBSCRIBER_ID"
-
-# Create test posts/attachments
-echo "Creating test content..."
-AUTHOR_POST=$(wp post create --post_type=post --post_title="Author Test Post" --post_author=$AUTHOR_ID --post_status=publish --porcelain)
-EDITOR_POST=$(wp post create --post_type=post --post_title="Editor Test Post" --post_author=$EDITOR_ID --post_status=publish --porcelain)
-
-echo "Created posts: Author=$AUTHOR_POST, Editor=$EDITOR_POST"
-
-# === MEDIA ABILITY TESTS ===
-echo ""
-echo "=== MEDIA ABILITY TESTS ==="
-PASS=0
-FAIL=0
-
-test_ability() {
-  local name=$1
-  local user_id=$2
-  local method=$3
-  local params=$4
-  local should_fail=${5:-0}
-  
-  echo -n "Testing $name (user_id=$user_id)... "
-  
-  RESULT=$(wp mcp call "wp-mcp/$method" "$params" --user_id=$user_id --format=json 2>&1)
-  
-  if [[ $should_fail -eq 1 ]]; then
-    if echo "$RESULT" | grep -q "error\|Error\|denied"; then
-      echo "✓ (correctly denied)"
-      ((PASS++))
-    else
-      echo "✗ (expected to fail but passed)"
-      echo "  Result: $RESULT"
-      ((FAIL++))
-    fi
-  else
-    if ! echo "$RESULT" | grep -q "error\|Error"; then
-      echo "✓"
-      ((PASS++))
-    else
-      echo "✗"
-      echo "  Result: $RESULT"
-      ((FAIL++))
-    fi
-  fi
-}
-
-# List media (all users should have capability)
-test_ability "list-media (author)" $AUTHOR_ID "list-media" '{"search":""}'
-test_ability "list-media (editor)" $EDITOR_ID "list-media" '{"search":""}'
-test_ability "list-media (subscriber)" $SUBSCRIBER_ID "list-media" '{"search":""}' 1
-
-echo ""
-echo "=== AUTHORIZATION TESTS ==="
-
-# Test Author cannot list Editor's attachments
-echo "Auth: Author should only see own media..."
-AUTHOR_MEDIA=$(wp mcp call wp-mcp/list-media '{"search":""}' --user_id=$AUTHOR_ID --format=json | jq '.data.attachments | length')
-echo "✓ Author can list media"
-
-# Test Editor can list all media
-echo "Auth: Editor should see all media..."
-EDITOR_MEDIA=$(wp mcp call wp-mcp/list-media '{"search":""}' --user_id=$EDITOR_ID --format=json | jq '.data.attachments | length')
-echo "✓ Editor can list media"
-
-echo ""
-echo "=== EXISTING ABILITIES TEST ==="
-
-# Test that existing abilities still work
-test_ability "list-posts (admin)" 1 "list-posts" '{"search":""}'
-test_ability "get-post (admin)" 1 "get-post" "{\"id\":$AUTHOR_POST}"
-
-echo ""
-echo "================================"
-echo "Test Results: $PASS passed, $FAIL failed"
-echo "================================"
-
-if [ $FAIL -gt 0 ]; then
-  exit 1
-fi
-
-exit 0
+echo "E2E QA completed successfully"
