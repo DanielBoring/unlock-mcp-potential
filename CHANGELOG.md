@@ -1,6 +1,8 @@
-# Changelog
+# Plugin Changelog
 
-All notable changes to Unlock MCP Potential are tracked here.
+Plugin-facing changes to Unlock MCP Potential are tracked here. Release notes and version sections should include only changes that affect plugin users, MCP tool compatibility, WordPress behavior, or packaged plugin functionality.
+
+Repository, CI, contributor, and GitHub platform changes are tracked separately in `.github/REPOSITORY_CHANGELOG.md`.
 
 ## Unreleased
 
@@ -12,16 +14,10 @@ All notable changes to Unlock MCP Potential are tracked here.
 ### Changed
 
 - Renamed registered MCP ability names and categories to the `unlock-mcp-potential` plugin slug namespace.
-- Updated README and WordPress.org readme documentation to include plugin management abilities and administrator role requirements.
-- Clarified E2E manifest coverage documentation for the current 37 registered abilities and 57 manifest test cases.
-- Updated pull request and contribution guidance so external contributors can apply WordPress.org guideline checks when relevant and keep docs, changelog, and E2E coverage in sync.
-- Added repository agent instructions for repeatable ability, documentation, changelog, contribution, and validation workflows.
-- Clarified that local agent validation is a preflight check and GitHub Actions remains the authoritative PR validation gate.
 
 ### Fixed
 
 - Preserved backslashes in `create-post` and `update-post` content by slashing post data before WordPress insert/update calls.
-- Avoided Docker Compose project-name collisions between local and GitHub Actions E2E runs.
 
 ## 1.6.0
 
