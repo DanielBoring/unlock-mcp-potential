@@ -11,7 +11,7 @@ All notable changes to Unlock MCP Potential are tracked here.
 - Added a hardened GitHub Actions E2E QA workflow with merge-base-safe changed-file detection and manual `workflow_dispatch` support.
 - Added manifest-driven E2E ability coverage via `tests/e2e/abilities-manifest.json` and `tests/e2e/ability-runner.php`.
 - Added an E2E coverage gate that fails when any registered `wp-mcp/*` ability is missing from the manifest.
-- Added E2E execution coverage for the current 30 registered abilities with 33 manifest test cases, including positive and negative permission cases.
+- Added E2E execution coverage for the current 30 registered abilities with 37 manifest test cases, including positive and negative permission cases.
 - Added E2E PR comments that report ability coverage counts, tested dependency versions, commit SHA, and workflow run URL.
 - Added failure artifact collection for E2E failures, including Docker Compose logs, WordPress debug logs, and E2E summary JSON.
 - Added E2E documentation in `tests/e2e/README.md` describing the rule that new or changed abilities must include manifest test coverage.
