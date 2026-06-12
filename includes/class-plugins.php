@@ -314,8 +314,8 @@ class Unlock_MCP_Plugins {
 	}
 
 	private static function normalize_plugin( $plugin, $plugin_data ) {
-		$updates        = get_site_transient( 'update_plugins' );
 		// Read-only status reporting; this does not modify WordPress update routines.
+		$updates        = get_site_transient( 'update_plugins' );
 		$auto_updates   = (array) get_site_option( 'auto_update_plugins', [] );
 		$network_active = is_multisite() && is_plugin_active_for_network( $plugin );
 
