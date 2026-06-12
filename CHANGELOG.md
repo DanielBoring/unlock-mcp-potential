@@ -20,6 +20,7 @@ All notable changes to Unlock MCP Potential are tracked here.
 
 ### Fixed
 
+- Fixed v1.6.1 release-readiness items from Plugin Check by keeping package validation aligned to the canonical `unlock-mcp-potential` slug, shortening the WordPress.org short description, and documenting accepted read-only update-status and bounded Yoast meta-query warnings.
 - Preserved backslashes in `create-post` and `update-post` content by slashing post data before WordPress insert/update calls.
 - Avoided Docker Compose project-name collisions between local and GitHub Actions E2E runs.
 

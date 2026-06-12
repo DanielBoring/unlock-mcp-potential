@@ -4,12 +4,12 @@ Tags: mcp, ai, automation, content-management, artificial-intelligence
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://paypal.me/VirtuallyBoring
 
-Adds MCP-powered WordPress content management abilities for posts, pages, media, comments, plugins, SEO checks, site health, security audits, and user lookup.
+Adds MCP-powered WordPress abilities for posts, pages, media, comments, plugins, SEO, site health, security, and users.
 
 == Description ==
 
@@ -104,6 +104,11 @@ Delete operations for posts and pages move content to trash. Media delete perman
 
 == Changelog ==
 
+= 1.6.1 =
+* Fix release packaging guidance so Plugin Check evaluates the canonical `unlock-mcp-potential` slug
+* Shorten the WordPress.org short description to stay within parser limits
+* Document accepted Plugin Check warnings for read-only plugin auto-update status reporting and bounded Yoast SEO meta checks
+
 = 1.6.0 =
 * Add plugin management abilities: `list-plugins`, `activate-plugin`, and `deactivate-plugin`
 * Add guarded plugin activation/deactivation controls with canonical `plugin_basename` identifiers, protected-plugin safeguards, multisite-aware `network_wide` handling, and structured errors
@@ -148,6 +153,9 @@ Delete operations for posts and pages move content to trash. Media delete perman
 * Security audit with fail/warn/pass buckets and remediation guidance
 
 == Upgrade Notice ==
+
+= 1.6.1 =
+Fixes Plugin Check release-readiness items for the WordPress.org package.
 
 = 1.6.0 =
 Adds plugin management abilities and guarded activation controls, plus release and coverage hardening updates.
