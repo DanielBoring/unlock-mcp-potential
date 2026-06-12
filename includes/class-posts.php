@@ -83,6 +83,22 @@ class Unlock_MCP_Posts {
 		};
 	}
 
+	private static function restore_permission( $type, $input_key ) {
+		return function ( $input = [] ) use ( $type, $input_key ) {
+			$id   = absint( $input[ $input_key ] ?? 0 );
+			$post = get_post( $id );
+
+			if ( ! $post || $post->post_type !== $type ) {
+				return new WP_Error( 'not_found', ucfirst( $type ) . ' not found.' );
+			}
+			if ( ! current_user_can( 'delete_post', $id ) ) {
+				return new WP_Error( 'forbidden', "Requires delete_post capability for this {$type}." );
+			}
+
+			return true;
+		};
+	}
+
 	private static function featured_image_permission() {
 		return function ( $input = [] ) {
 			$id   = absint( $input['post_id'] ?? 0 );
@@ -511,6 +527,44 @@ class Unlock_MCP_Posts {
 			'permission_callback' => self::object_permission( $type, "{$type}_id", 'delete_post' ),
 			'meta'                => [
 				'annotations' => [ 'readonly' => false, 'destructive' => true, 'idempotent' => false ],
+				'mcp'         => [ 'public' => true, 'type' => 'tool' ],
+			],
+		] );
+
+		// --- restore (untrash) ---
+		wp_register_ability( "wp-mcp/restore-{$type}", [
+			'label'               => "Restore {$label}",
+			'description'         => "Restore a WordPress {$type} from trash.",
+			'category'            => 'wp-mcp',
+			'input_schema'        => [
+				'type'       => 'object',
+				'properties' => [
+					"{$type}_id" => [ 'type' => 'integer', 'description' => ucfirst( $type ) . ' ID to restore from trash' ],
+				],
+				'required'   => [ "{$type}_id" ],
+			],
+			'execute_callback'    => function ( $input ) use ( $type ) {
+				$id   = absint( $input[ "{$type}_id" ] );
+				$post = get_post( $id );
+
+				if ( ! $post || $post->post_type !== $type ) {
+					return [ 'success' => false, 'error' => ucfirst( $type ) . ' not found.' ];
+				}
+				if ( ! current_user_can( 'delete_post', $id ) ) {
+					return [ 'success' => false, 'error' => "You do not have permission to restore this {$type}." ];
+				}
+
+				$result = wp_untrash_post( $id );
+
+				if ( ! $result ) {
+					return [ 'success' => false, 'error' => 'Failed to restore ' . $type . ' from trash.' ];
+				}
+
+				return [ 'success' => true, 'data' => self::normalize( $id ) ];
+			},
+			'permission_callback' => self::restore_permission( $type, "{$type}_id" ),
+			'meta'                => [
+				'annotations' => [ 'readonly' => false, 'destructive' => false, 'idempotent' => false ],
 				'mcp'         => [ 'public' => true, 'type' => 'tool' ],
 			],
 		] );
